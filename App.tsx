@@ -1,66 +1,66 @@
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { Alert, Button, StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { useEffect } from 'react';
+import React, { useContext, useEffect } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+// import HomeScreen from "./src/screens/HomeScreen";
+// import LoginScreen from "./src/screens/LoginScreen";
+import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
+import { enableScreens } from "react-native-screens";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+// import { getStoreTimes } from "./src/api/StoreTimeAPI";
+// import { AuthContext, AuthProvider } from "./src/context/createContext";
+// import Toast from "react-native-toast-message";
+// import Header from "./src/components/Header/Header";
+// import themes from "./src/themes";
 
+enableScreens();
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createStackNavigator();
 
+function RootNavigator() {
+  // const { user, loading, token } = useContext(AuthContext);
 
-  useEffect(() => {
-GoogleSignin.configure({
-  webClientId: '564532712183-ao0pf6poqqaaf0u1ckpfaddo12bpntne.apps.googleusercontent.com',
-});
-    console.log('connected');
-  }, [])
-
-
-  async function onGoogleButtonPress() {
-    try {
-      // Check if your device supports Google Play
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-
-      // Get the users ID token
-      const signInResult = await GoogleSignin.signIn();
-
-      // Try the new style of google-sign in result, from v13+ of that module
-      const { idToken, user } = signInResult?.data;
-      console.log( idToken)
-            console.log( user )
-
-      if (!idToken) {
-        // if you are using older versions of google-signin, try old style result
-        idToken = signInResult.idToken;
-      }
-      if (!idToken) {
-        throw new Error('No ID token found');
-      }
-
-      // Create a Google credential with the token - USE THE idToken VARIABLE
-      const googleCredential = GoogleAuthProvider.credential(idToken);
-
-      // Sign-in the user with the credential
-      return signInWithCredential(getAuth(), googleCredential);
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
+  // useEffect(() => {
+  //   if (!loading) {
+  //     // TODO: hide splashscreen
+  //   }
+  // }, [loading])
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Button title='google' onPress={onGoogleButtonPress} />
-      </View>
-    </SafeAreaProvider>
+    <Stack.Navigator
+      screenOptions={{
+        // cardStyle: { backgroundColor: themes.colors.backgroundColor },
+        // cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+      }}
+    >
+      {/* {(user && token) ? (
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ header: () => <Header /> }}
+        />
+      ) : (
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+
+        />
+      )} */}
+    </Stack.Navigator>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        {/* <AuthProvider> */}
+          <>
+            <RootNavigator />
+            {/* <Toast /> */}
+          </>
+        {/* </AuthProvider> */}
+      </NavigationContainer>
+    </GestureHandlerRootView>
+  );
+}
+
