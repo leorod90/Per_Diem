@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "564532712183",
+    "project_id": "per-diem-bb7f3",
+    "storage_bucket": "per-diem-bb7f3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:564532712183:android:c30917ebf813c5109cf9f2",
+        "android_client_info": {
+          "package_name": "com.per_diem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "564532712183-lpt0tbsk5kncgaqrgn51b44j5b9hdfmv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.per_diem",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "564532712183-ao0pf6poqqaaf0u1ckpfaddo12bpntne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCegZeKePIaxg25deZ74G6tziHHLd7u2Vg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "564532712183-ao0pf6poqqaaf0u1ckpfaddo12bpntne.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "564532712183-hdu89ud2k0m77n7q2sbnr638mldi9otq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.Per-Diem"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
