@@ -5,7 +5,6 @@ import HomeScreen from "./src/screens/HomeScreen";
 import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
 import { enableScreens } from "react-native-screens";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { getStoreTimes } from "./src/api/StoreTimeAPI";
 import { AuthContext, AuthProvider } from "./src/context/createContext";
 import Toast from "react-native-toast-message";
 import Header from "./src/components/Header/Header";

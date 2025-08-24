@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
+// import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { FIREBASE_GOOGLE_ID } from "@env";
 import { User } from './AuthAPI';

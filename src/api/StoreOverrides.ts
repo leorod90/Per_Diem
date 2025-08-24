@@ -1,4 +1,4 @@
-import axiosInstance from 'axios';
+import axiosInstance from "./Axios";
 import { Month, PostStoreOverride, StoreOverride } from '../types/StoreTypes';
 
 export const getStoreOverrides = async (): Promise<StoreOverride[]> => {
