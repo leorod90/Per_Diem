@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeading from '../components/CustomHeading.tsx';
 
 const BLOB_SIZE = 400;
+const GOOGLE_LOGO_SIZE = 30;
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("user@tryperdiem.com");
@@ -42,7 +43,7 @@ export default function LoginScreen() {
         <Blob size={BLOB_SIZE} />
       </View>
       <SafeAreaView style={styles.inputContainer}>
-        <CustomHeading>Perdeim</CustomHeading>
+        <CustomHeading>Perdiem</CustomHeading>
         <TextInput
           style={styles.input}
           placeholder="Enter your email"
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: spacing(2)
   },
   googleImg: {
-    height: spacing(40),
-    width: spacing(40),
+    height: spacing(GOOGLE_LOGO_SIZE),
+    width: spacing(GOOGLE_LOGO_SIZE),
   }
 })
