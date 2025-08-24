@@ -1,11 +1,18 @@
 import { GoogleAuthProvider, getAuth, signInWithCredential } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { FIREBASE_GOOGLE_ID } from "@env";
+import { User } from './AuthAPI';
 
 GoogleSignin.configure({
-  webClientId: '564532712183-ao0pf6poqqaaf0u1ckpfaddo12bpntne.apps.googleusercontent.com',
+  webClientId: FIREBASE_GOOGLE_ID
 });
 
-export const onGoogleButtonPress = async () => {
+export interface GoogleSignInResult {
+  profile: User | null;
+  idToken: string | null;
+}
+
+export const onGoogleButtonPress = async (): Promise<GoogleSignInResult> => {
   try {
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
@@ -15,8 +22,6 @@ export const onGoogleButtonPress = async () => {
 
     // Try the new style of google-sign in result, from v13+ of that module
     const { idToken, user } = signInResult?.data;
-    console.log(idToken)
-    console.log(user)
 
     if (!idToken) {
       // if you are using older versions of google-signin, try old style result
@@ -25,13 +30,20 @@ export const onGoogleButtonPress = async () => {
     if (!idToken) {
       throw new Error('No ID token found');
     }
+    return {
+      profile: user,
+      idToken
+    }
+    // //  Create a Google credential with the token - USE THE idToken VARIABLE
+    // const googleCredential = GoogleAuthProvider.credential(idToken);
 
-    // Create a Google credential with the token - USE THE idToken VARIABLE
-    const googleCredential = GoogleAuthProvider.credential(idToken);
-
-    // Sign-in the user with the credential
-    return signInWithCredential(getAuth(), googleCredential);
+    // // Sign-in the user with the credential
+    // return signInWithCredential(getAuth(), googleCredential);
   } catch (error) {
     console.log(error)
+    return {
+      profile: null,
+      idToken: null
+    }
   }
 }
