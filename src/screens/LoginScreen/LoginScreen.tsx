@@ -1,6 +1,5 @@
 import { View, TextInput, StyleSheet, Pressable, Vibration, Text, Image } from 'react-native'
-import React, { useContext, useState } from 'react'
-import { AuthContext } from '../../context/createContext.tsx';
+import React, { useState } from 'react'
 import Toast from 'react-native-toast-message';
 import CustomText from '../../components/CustomText.tsx';
 import themes, { spacing } from '../../themes/index.ts';
@@ -8,14 +7,19 @@ import Blob from '../../../assets/svg/pattern.tsx'
 import CustomBtn from '../../components/CustomBtn.tsx';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeading from '../../components/CustomHeading.tsx';
+import { useAuthStore } from '../../store/useAuthStore.ts';
+import { RootStackParamList } from '../../types/DefaultScreenType.ts';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const BLOB_SIZE = 400;
 const GOOGLE_LOGO_SIZE = 30;
 
+type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "LoginScreen">;
+
 export default function LoginScreen() {
   const [email, setEmail] = useState("user@tryperdiem.com");
   const [password, setPassword] = useState("password");
-  const { user, loading, signIn, signInWithGoogle } = useContext(AuthContext);
+  const { signIn, signInWithGoogle } = useAuthStore();
 
   const loginUserHandler = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

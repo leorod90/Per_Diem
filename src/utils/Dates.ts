@@ -36,9 +36,9 @@ export function generateTimeSlots(interval = 15) {
   return slots;
 }
 
-export function formatToAmPm(time24: string): string {
+export function formatToAmPm(time24: string | undefined): string {
   try {
-    const [hourStr, minuteStr] = time24.split(':');
+    const [hourStr, minuteStr] = time24!.split(':');
     let hour = parseInt(hourStr, 10);
     const minute = minuteStr;
     const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -71,6 +71,14 @@ export const convertTimeToTimeZone = (
 
   return converted;
 };
+
+export function getGreeting(hour: number, city: string): string {
+  if (hour >= 5 && hour <= 9) return `Good Morning,\n${city}!`;
+  if (hour >= 10 && hour <= 11) return `Late Morning Vibes!\n${city}`;
+  if (hour >= 12 && hour <= 16) return `Good Afternoon,\n${city}!`;
+  if (hour >= 17 && hour <= 20) return `Good Evening,\n${city}!`;
+  return `Night Owl in\n${city}!`;
+}
 
 const LOCAL = Intl.DateTimeFormat().resolvedOptions().timeZone;
 

@@ -8,6 +8,7 @@ import CustomHeading from '../../components/CustomHeading';
 import CustomText from '../../components/CustomText';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TimePickerModal } from '../../components/TimePickerModal';
+import { useTimeStore } from '../../store/useTimeStore';
 
 const FLAT_DELAY = 25;
 
@@ -42,23 +43,22 @@ const TimeCard = ({ item, index, fadeDirection, setShowTimeModal }: TimeProps) =
 )
 
 interface Props {
-  timeZoneItem: TimeZoneType;
   fadeDirection?: CardFadeDirection;
   setShowTimeModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function TimeDisplay({
-  timeZoneItem,
   fadeDirection = CardFadeDirection.LEFT,
   setShowTimeModal
 }: Props) {
   const [next30Array, setNext30Array] = useState<NextDays[]>([])
   const safeAreaInsets = useSafeAreaInsets();
+  const {  selectedTimeZone } = useTimeStore();
 
   useEffect(() => {
-    const next30 = generateNext30Days(timeZoneItem.timeZone);
+    const next30 = generateNext30Days(selectedTimeZone.timeZone);
     setNext30Array(next30);
-  }, [timeZoneItem])
+  }, [selectedTimeZone])
 
   return (
     <FlatList

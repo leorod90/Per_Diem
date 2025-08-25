@@ -1,92 +1,32 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomText from '../../components/CustomText'
-import { getStoreTimes } from '../../api/StoreTimeAPI'
-import { getStoreOverrides } from '../../api/StoreOverrides'
-import { convertTimeToTimeZone, getCityFromTimeZone, TIME_ZONES, TimeZones, TimeZoneType } from '../../utils/Dates'
 import themes, { spacing } from '../../themes'
-import TimeDisplay, { CardFadeDirection } from './TimeDisplay'
-import { TimePickerModal } from '../../components/TimePickerModal'
 import DisplayStore from './DisplayStore'
+import { useTimeStore } from '../../store/useTimeStore'
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { RootStackParamList } from '../../types/DefaultScreenType'
+import { StoreLogo } from '../../../assets/svg/store'
+
+type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "HomeScreen">;
 
 export default function HomeScreen() {
-  const [selectedTimeZone, setSelectedTimeZone] = useState(TIME_ZONES[0]);
-  const [selectedTime, setSelectedTime] = useState<string>();
-  const [showTimeModal, setShowTimeModal] = useState(false);
+  const navigation = useNavigation<HomeScreenNavProp>();
+  const { fetchTimes, setSelectedTime } = useTimeStore();
 
-  useEffect(() => {
-    if (!selectedTime || !selectedTimeZone) return;
-
-    let convertedTime: string | null = null;
-    if (selectedTimeZone.timeZone === TimeZones.Local) {
-      convertedTime = convertTimeToTimeZone(selectedTime, TimeZones.LosAngeles, TimeZones.Local);
-    } else if (selectedTimeZone.timeZone === TimeZones.LosAngeles) {
-      convertedTime = convertTimeToTimeZone(selectedTime, TimeZones.Local, TimeZones.LosAngeles);
-    }
-
-    if (convertedTime) {
-      setSelectedTime(convertedTime)
-    }
-
-  }, [selectedTimeZone]);
 
   const getStoreTimesHandler = async () => {
-    const data = await getStoreTimes();
-    const data2 = await getStoreOverrides();
-    // console.log("store times", data);
-    // console.log("store override", data2)
-  }
-
-  const selectTimeZone = (tZ: TimeZoneType) => {
-    setSelectedTimeZone(tZ)
-  }
-
-  const setTimeHandler = (time: string) => {
-    setSelectedTime(time);
-    setShowTimeModal(false);
+    // const data = await getStoreTimes();
+    // const data2 = await getStoreOverrides();
   }
 
   return (
     <View style={styles.container}>
-      <DisplayStore
-        selectedTime={selectedTime}
-      />
-      <View style={styles.timeZoneContainer}>
-        {TIME_ZONES.map((item) => (
-          <TouchableOpacity
-            key={item.timeZone}
-            onPress={() => selectTimeZone(item)}
-            style={[
-              styles.timeZoneItem,
-              {
-                opacity: selectedTimeZone.timeZone === item.timeZone ? 1 : .4
-              }
-            ]}
-          >
-            <CustomText>{getCityFromTimeZone(item.timeZone)}</CustomText>
-          </TouchableOpacity>
-        ))}
-      </View>
-      {selectedTimeZone.timeZone === TimeZones.Local && (
-        <TimeDisplay
-          key={TimeZones.Local}
-          timeZoneItem={selectedTimeZone}
-          setShowTimeModal={setShowTimeModal}
-          fadeDirection={CardFadeDirection.RIGHT}
-        />
-      )}
-      {selectedTimeZone.timeZone === TimeZones.LosAngeles && (
-        <TimeDisplay
-          key={TimeZones.LosAngeles}
-          timeZoneItem={selectedTimeZone}
-          setShowTimeModal={setShowTimeModal}
-        />
-      )}
-      <TimePickerModal
-        visible={showTimeModal}
-        onCancel={() => setShowTimeModal(false)}
-        onConfirm={setTimeHandler}
-      />
+      <DisplayStore />
+      <StoreLogo width={80} height={80} color="#1E88E5" />
+
+      <TouchableOpacity onPress={()=> navigation.navigate("TimeScreen")}><CustomText>press</CustomText></TouchableOpacity>
     </View>
   )
 }

@@ -5,23 +5,29 @@ import HomeScreen from "./src/screens/HomeScreen/HomeScreen";
 import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
 import { enableScreens } from "react-native-screens";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AuthContext, AuthProvider } from "./src/context/createContext";
 import Toast from "react-native-toast-message";
 import Header from "./src/components/Header/Header";
 import themes from "./src/themes";
+import { useAuthStore } from "./src/store/useAuthStore";
+import TimeScreen from "./src/screens/TimeScreen/TimeScreen";
+import { RootStackParamList } from "./src/types/DefaultScreenType";
+import { useTimeStore } from "./src/store/useTimeStore";
 
 enableScreens();
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const { user, loading, token } = useContext(AuthContext);
+  const { user, token, loading, restoreSession } = useAuthStore();
+  const { fetchTimes } = useTimeStore();
 
   useEffect(() => {
-    if (!loading) {
-      // TODO: hide splashscreen
-    }
-  }, [loading])
+    // if (loading) {
+    //   // todo: splashcreen
+    // }
+    restoreSession();
+    fetchTimes();
+  }, [restoreSession, fetchTimes]);
 
   return (
     <Stack.Navigator
@@ -31,14 +37,23 @@ function RootNavigator() {
       }}
     >
       {(user && token) ? (
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ header: () => <Header /> }}
-        />
+        <>
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{ header: () => <Header /> }}
+          />
+          <Stack.Screen
+            name="TimeScreen"
+            component={TimeScreen}
+            options={{
+              presentation: "modal",
+            }}
+          />
+        </>
       ) : (
         <Stack.Screen
-          name="Login"
+          name="LoginScreen"
           component={LoginScreen}
           options={{ headerShown: false }}
 
@@ -52,12 +67,10 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <AuthProvider>
-          <>
-            <RootNavigator />
-            <Toast />
-          </>
-        </AuthProvider>
+        <>
+          <RootNavigator />
+          <Toast />
+        </>
       </NavigationContainer>
     </GestureHandlerRootView>
   );
