@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Button } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { generateNext30Days, NextDays, TimeZoneType } from '../../utils/Dates'
 import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated';
@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import themes, { spacing } from '../../themes';
 import CustomHeading from '../../components/CustomHeading';
 import CustomText from '../../components/CustomText';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { TimePickerModal } from '../../components/TimePickerModal';
 
 const FLAT_DELAY = 25;
 
@@ -17,10 +19,11 @@ export enum CardFadeDirection {
 interface TimeProps {
   item: NextDays;
   index: number;
-  fadeDirection: CardFadeDirection
+  fadeDirection: CardFadeDirection;
+  setShow: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const TimeCard = ({ item, index, fadeDirection }: TimeProps) => (
+const TimeCard = ({ item, index, fadeDirection, setShow }: TimeProps) => (
   <Animated.View
     style={styles.card}
     entering={
@@ -30,6 +33,7 @@ const TimeCard = ({ item, index, fadeDirection }: TimeProps) => (
     }>
     <TouchableOpacity
       style={styles.cardInner}
+      onPress={() => setShow(true)}
     >
       <CustomText size={themes.text.md}>{item.month}</CustomText>
       <CustomHeading>{item.day}</CustomHeading>
@@ -54,24 +58,43 @@ export default function TimeDisplay({
     setNext30Array(next30);
   }, [timeZoneItem])
 
+  const [show, setShow] = useState(false);
+  const [time, setTime] = useState(new Date());
+
+  const onChange = (event: any, selectedDate?: Date) => {
+    setShow(false); // hide picker on selection
+    if (selectedDate) setTime(selectedDate);
+  };
+
   return (
-    <FlatList
-      data={next30Array}
-      keyExtractor={(item, index) => index.toString()}
-      numColumns={3}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        paddingBottom: safeAreaInsets.bottom
-      }}
-      renderItem={({ item, index }) => (
-        <TimeCard
-          item={item}
-          index={index}
-          fadeDirection={fadeDirection}
-        />
-      )}
-      columnWrapperStyle={styles.row}
-    />
+    <>
+      <FlatList
+        data={next30Array}
+        keyExtractor={(item, index) => index.toString()}
+        numColumns={3}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: safeAreaInsets.bottom
+        }}
+        renderItem={({ item, index }) => (
+          <TimeCard
+            item={item}
+            index={index}
+            fadeDirection={fadeDirection}
+            setShow={setShow}
+          />
+        )}
+        columnWrapperStyle={styles.row}
+      />
+      <TimePickerModal
+        visible={show}
+        onCancel={() => setShow(false)}
+        onConfirm={(time) => {console.log(time)
+          setTime(time);
+          setShow(false);
+        }}
+      />
+    </>
   )
 }
 
