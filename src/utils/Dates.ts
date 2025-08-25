@@ -72,12 +72,12 @@ export const convertTimeToTimeZone = (
   return converted;
 };
 
-export function getGreeting(hour: number, city: string): string {
-  if (hour >= 5 && hour <= 9) return `Good Morning,\n${city}!`;
-  if (hour >= 10 && hour <= 11) return `Late Morning Vibes!\n${city}`;
-  if (hour >= 12 && hour <= 16) return `Good Afternoon,\n${city}!`;
-  if (hour >= 17 && hour <= 20) return `Good Evening,\n${city}!`;
-  return `Night Owl in\n${city}!`;
+export function getGreeting(hour: number): string {
+  if (hour >= 5 && hour <= 9) return `Good Morning,`;
+  if (hour >= 10 && hour <= 11) return `Late Morning Vibes`;
+  if (hour >= 12 && hour <= 16) return `Good Afternoon,`;
+  if (hour >= 17 && hour <= 20) return `Good Evening!`;
+  return `Night Owl in`;
 }
 
 const LOCAL = Intl.DateTimeFormat().resolvedOptions().timeZone;

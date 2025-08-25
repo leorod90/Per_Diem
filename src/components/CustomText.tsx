@@ -6,15 +6,17 @@ interface Props {
   color?: string;
   size?: number;
   children: ReactNode;
+  style?: any
 }
 
 export default function CustomText({
   color = themes.colors.black,
   size = themes.text.md,
-  children
+  children,
+  style = {}
 }: Props) {
   return (
-    <Text style={[styles.text, { color, fontSize: size }]}>
+    <Text style={[styles.text, style, { color, fontSize: size }]}>
       {children}
     </Text>
   );
