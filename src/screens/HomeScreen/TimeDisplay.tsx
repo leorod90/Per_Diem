@@ -20,10 +20,10 @@ interface TimeProps {
   item: NextDays;
   index: number;
   fadeDirection: CardFadeDirection;
-  setShow: React.Dispatch<React.SetStateAction<boolean>>
+  setShowTimeModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const TimeCard = ({ item, index, fadeDirection, setShow }: TimeProps) => (
+const TimeCard = ({ item, index, fadeDirection, setShowTimeModal }: TimeProps) => (
   <Animated.View
     style={styles.card}
     entering={
@@ -33,7 +33,7 @@ const TimeCard = ({ item, index, fadeDirection, setShow }: TimeProps) => (
     }>
     <TouchableOpacity
       style={styles.cardInner}
-      onPress={() => setShow(true)}
+      onPress={() => setShowTimeModal(true)}
     >
       <CustomText size={themes.text.md}>{item.month}</CustomText>
       <CustomHeading>{item.day}</CustomHeading>
@@ -43,12 +43,14 @@ const TimeCard = ({ item, index, fadeDirection, setShow }: TimeProps) => (
 
 interface Props {
   timeZoneItem: TimeZoneType;
-  fadeDirection?: CardFadeDirection
+  fadeDirection?: CardFadeDirection;
+  setShowTimeModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function TimeDisplay({
   timeZoneItem,
-  fadeDirection = CardFadeDirection.LEFT
+  fadeDirection = CardFadeDirection.LEFT,
+  setShowTimeModal
 }: Props) {
   const [next30Array, setNext30Array] = useState<NextDays[]>([])
   const safeAreaInsets = useSafeAreaInsets();
@@ -58,43 +60,25 @@ export default function TimeDisplay({
     setNext30Array(next30);
   }, [timeZoneItem])
 
-  const [show, setShow] = useState(false);
-  const [time, setTime] = useState(new Date());
-
-  const onChange = (event: any, selectedDate?: Date) => {
-    setShow(false); // hide picker on selection
-    if (selectedDate) setTime(selectedDate);
-  };
-
   return (
-    <>
-      <FlatList
-        data={next30Array}
-        keyExtractor={(item, index) => index.toString()}
-        numColumns={3}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: safeAreaInsets.bottom
-        }}
-        renderItem={({ item, index }) => (
-          <TimeCard
-            item={item}
-            index={index}
-            fadeDirection={fadeDirection}
-            setShow={setShow}
-          />
-        )}
-        columnWrapperStyle={styles.row}
-      />
-      <TimePickerModal
-        visible={show}
-        onCancel={() => setShow(false)}
-        onConfirm={(time) => {console.log(time)
-          setTime(time);
-          setShow(false);
-        }}
-      />
-    </>
+    <FlatList
+      data={next30Array}
+      keyExtractor={(item, index) => index.toString()}
+      numColumns={3}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        paddingBottom: safeAreaInsets.bottom
+      }}
+      renderItem={({ item, index }) => (
+        <TimeCard
+          item={item}
+          index={index}
+          fadeDirection={fadeDirection}
+          setShowTimeModal={setShowTimeModal}
+        />
+      )}
+      columnWrapperStyle={styles.row}
+    />
   )
 }
 

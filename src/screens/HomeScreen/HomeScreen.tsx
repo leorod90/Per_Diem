@@ -2,24 +2,34 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomText from '../../components/CustomText'
 import { getStoreTimes } from '../../api/StoreTimeAPI'
-import Animated, { FadeInDown, FadeInLeft, FadeInRight } from 'react-native-reanimated'
 import { getStoreOverrides } from '../../api/StoreOverrides'
-import { getCityFromTimeZone, TIME_ZONES, TimeZones, TimeZoneType } from '../../utils/Dates'
+import { convertTimeToTimeZone, getCityFromTimeZone, TIME_ZONES, TimeZones, TimeZoneType } from '../../utils/Dates'
 import themes, { spacing } from '../../themes'
 import TimeDisplay, { CardFadeDirection } from './TimeDisplay'
+import { TimePickerModal } from '../../components/TimePickerModal'
 
 export default function HomeScreen() {
   const [selectedTimeZone, setSelectedTimeZone] = useState(TIME_ZONES[0]);
+  const [selectedTime, setSelectedTime] = useState<string>();
+  const [showTimeModal, setShowTimeModal] = useState(false);
 
   useEffect(() => {
-    // const c = getCityFromTimeZone(TIME_ZONES.current);
-    // setCity(c);
-    const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (!selectedTime || !selectedTimeZone) return;
 
-    // getStoreTimesHandler();
-    // const localTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // console.log(localTimezone)
-  }, [])
+    let convertedTime: string | null = null;
+
+    if (selectedTimeZone.timeZone === TimeZones.Local) {
+      convertedTime = convertTimeToTimeZone(selectedTime, TimeZones.LosAngeles, TimeZones.Local);
+    } else if (selectedTimeZone.timeZone === TimeZones.LosAngeles) {
+      convertedTime = convertTimeToTimeZone(selectedTime, TimeZones.Local, TimeZones.LosAngeles);
+    }
+
+    if (convertedTime) {
+      console.log(convertedTime)
+      // setConvertedTime(convertedTime); 
+    }
+
+  }, [selectedTimeZone]);
 
   const getStoreTimesHandler = async () => {
     const data = await getStoreTimes();
@@ -30,6 +40,11 @@ export default function HomeScreen() {
 
   const selectTimeZone = (tZ: TimeZoneType) => {
     setSelectedTimeZone(tZ)
+  }
+
+  const setTimeHandler = (time) => {
+    setSelectedTime(time);
+    setShowTimeModal(false);
   }
 
   return (
@@ -54,6 +69,7 @@ export default function HomeScreen() {
         <TimeDisplay
           key={TimeZones.Local}
           timeZoneItem={selectedTimeZone}
+          setShowTimeModal={setShowTimeModal}
         />
       )}
       {selectedTimeZone.timeZone === TimeZones.LosAngeles && (
@@ -61,12 +77,14 @@ export default function HomeScreen() {
           key={TimeZones.LosAngeles}
           timeZoneItem={selectedTimeZone}
           fadeDirection={CardFadeDirection.RIGHT}
+          setShowTimeModal={setShowTimeModal}
         />
       )}
-      {/* <Animated.View
-        entering={FadeInDown}>
-        <CustomText>{city}</CustomText>
-      </Animated.View> */}
+      <TimePickerModal
+        visible={showTimeModal}
+        onCancel={() => setShowTimeModal(false)}
+        onConfirm={setTimeHandler}
+      />
     </View>
   )
 }
