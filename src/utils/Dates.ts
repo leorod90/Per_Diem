@@ -37,15 +37,19 @@ export function generateTimeSlots(interval = 15) {
 }
 
 export function formatToAmPm(time24: string): string {
-  const [hourStr, minuteStr] = time24.split(':');
-  let hour = parseInt(hourStr, 10);
-  const minute = minuteStr;
-  const ampm = hour >= 12 ? 'PM' : 'AM';
+  try {
+    const [hourStr, minuteStr] = time24.split(':');
+    let hour = parseInt(hourStr, 10);
+    const minute = minuteStr;
+    const ampm = hour >= 12 ? 'PM' : 'AM';
 
-  hour = hour % 12;
-  if (hour === 0) hour = 12;
+    hour = hour % 12;
+    if (hour === 0) hour = 12;
 
-  return `${hour}:${minute} ${ampm}`;
+    return `${hour}:${minute} ${ampm}`;
+  } catch (error) {
+    return "Please select a time."
+  }
 }
 
 export const getCityFromTimeZone = (timezone: string): string => {
@@ -60,11 +64,11 @@ export const convertTimeToTimeZone = (
 ): string => {
   const today = new Date();
   const [hours, minutes] = time.split(':').map(Number);
-  
+
   const baseDate = set(today, { hours, minutes, seconds: 0, milliseconds: 0 });
   const utcDate = fromZonedTime(baseDate, fromTZ);
   const converted = formatInTimeZone(utcDate, toTZ, 'HH:mm');
-  
+
   return converted;
 };
 
