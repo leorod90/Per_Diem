@@ -1,5 +1,5 @@
 import { addDays, format, parse, set, setHours, setMinutes } from "date-fns";
-import { toZonedTime, formatInTimeZone } from "date-fns-tz";
+import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 export type NextDays = { month: string; day: string; year: string }
 
@@ -48,7 +48,6 @@ export function formatToAmPm(time24: string): string {
   return `${hour}:${minute} ${ampm}`;
 }
 
-
 export const getCityFromTimeZone = (timezone: string): string => {
   const parts = timezone.split('/');
   return parts[1].replace(/_/g, ' ');
@@ -60,16 +59,12 @@ export const convertTimeToTimeZone = (
   toTZ: string
 ): string => {
   const today = new Date();
-
-  // Parse the HH:mm string into a Date object
   const [hours, minutes] = time.split(':').map(Number);
-
-  // Create a date object in the "fromTZ" context
-  const fromDate = set(today, { hours, minutes, seconds: 0, milliseconds: 0 });
-
-  // Format the same moment in the target timezone
-  const converted = formatInTimeZone(fromDate, toTZ, 'HH:mm');
-
+  
+  const baseDate = set(today, { hours, minutes, seconds: 0, milliseconds: 0 });
+  const utcDate = fromZonedTime(baseDate, fromTZ);
+  const converted = formatInTimeZone(utcDate, toTZ, 'HH:mm');
+  
   return converted;
 };
 

@@ -7,6 +7,7 @@ import { convertTimeToTimeZone, getCityFromTimeZone, TIME_ZONES, TimeZones, Time
 import themes, { spacing } from '../../themes'
 import TimeDisplay, { CardFadeDirection } from './TimeDisplay'
 import { TimePickerModal } from '../../components/TimePickerModal'
+import DisplayStore from './DisplayStore'
 
 export default function HomeScreen() {
   const [selectedTimeZone, setSelectedTimeZone] = useState(TIME_ZONES[0]);
@@ -17,7 +18,6 @@ export default function HomeScreen() {
     if (!selectedTime || !selectedTimeZone) return;
 
     let convertedTime: string | null = null;
-
     if (selectedTimeZone.timeZone === TimeZones.Local) {
       convertedTime = convertTimeToTimeZone(selectedTime, TimeZones.LosAngeles, TimeZones.Local);
     } else if (selectedTimeZone.timeZone === TimeZones.LosAngeles) {
@@ -25,8 +25,7 @@ export default function HomeScreen() {
     }
 
     if (convertedTime) {
-      console.log(convertedTime)
-      // setConvertedTime(convertedTime); 
+      setSelectedTime(convertedTime)
     }
 
   }, [selectedTimeZone]);
@@ -42,13 +41,16 @@ export default function HomeScreen() {
     setSelectedTimeZone(tZ)
   }
 
-  const setTimeHandler = (time) => {
+  const setTimeHandler = (time: string) => {
     setSelectedTime(time);
     setShowTimeModal(false);
   }
 
   return (
     <View style={styles.container}>
+      <DisplayStore
+        selectedTime={selectedTime}
+      />
       <View style={styles.timeZoneContainer}>
         {TIME_ZONES.map((item) => (
           <TouchableOpacity
@@ -70,13 +72,13 @@ export default function HomeScreen() {
           key={TimeZones.Local}
           timeZoneItem={selectedTimeZone}
           setShowTimeModal={setShowTimeModal}
+          fadeDirection={CardFadeDirection.RIGHT}
         />
       )}
       {selectedTimeZone.timeZone === TimeZones.LosAngeles && (
         <TimeDisplay
           key={TimeZones.LosAngeles}
           timeZoneItem={selectedTimeZone}
-          fadeDirection={CardFadeDirection.RIGHT}
           setShowTimeModal={setShowTimeModal}
         />
       )}
