@@ -12,6 +12,7 @@ import { useAuthStore } from "./src/store/useAuthStore";
 import TimeScreen from "./src/screens/TimeScreen/TimeScreen";
 import { RootStackParamList } from "./src/types/DefaultScreenType";
 import { useTimeStore } from "./src/store/useTimeStore";
+import { useNotification } from "./src/notifications/useNotifications";
 
 enableScreens();
 
