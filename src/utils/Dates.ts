@@ -21,6 +21,34 @@ export const generateNext30Days = (timezone: string) => {
   return dates;
 };
 
+export function generateTimeSlots(interval = 15) {
+  const slots = [];
+  let start = 0;
+  const end = 24 * 60;
+
+  while (start < end) {
+    const hours = Math.floor(start / 60).toString().padStart(2, "0");
+    const minutes = (start % 60).toString().padStart(2, "0");
+    slots.push(`${hours}:${minutes}`);
+    start += interval;
+  }
+
+  return slots;
+}
+
+export function formatToAmPm(time24: string): string {
+  const [hourStr, minuteStr] = time24.split(':');
+  let hour = parseInt(hourStr, 10);
+  const minute = minuteStr;
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+
+  hour = hour % 12;
+  if (hour === 0) hour = 12;
+
+  return `${hour}:${minute} ${ampm}`;
+}
+
+
 export const getCityFromTimeZone = (timezone: string): string => {
   const parts = timezone.split('/');
   return parts[1].replace(/_/g, ' ');
