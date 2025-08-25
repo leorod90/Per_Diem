@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   btn: {
     borderRadius: spacing(6),
     paddingHorizontal: spacing(10),
+    paddingVertical: spacing(4),
     alignItems:'center'
   }
 })

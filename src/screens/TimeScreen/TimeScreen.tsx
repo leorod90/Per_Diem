@@ -1,17 +1,20 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomText from '../../components/CustomText'
-import {  getCityFromTimeZone, TIME_ZONES, TimeZones } from '../../utils/Dates'
+import { getCityFromTimeZone, roundToNearest15, TIME_ZONES, TimeZones } from '../../utils/Dates'
 import themes, { spacing } from '../../themes'
 import TimeDisplay, { CardFadeDirection } from './TimeDisplay'
 import { TimePickerModal } from '../../components/TimePickerModal'
 import { useTimeStore } from '../../store/useTimeStore'
 import { RootStackParamList } from '../../types/DefaultScreenType'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { useNavigation } from '@react-navigation/native'
 
-type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "TimeScreen">;
+type TimeScreenNavProp = StackNavigationProp<RootStackParamList, "TimeScreen">;
 
 export default function TimeScreen() {
+  const navigation = useNavigation<TimeScreenNavProp>();
+
   const { fetchTimes, selectedTimeZone, setSelectedTime, setSelectedTimeZone } = useTimeStore();
 
   const [showTimeModal, setShowTimeModal] = useState(false);
@@ -21,9 +24,11 @@ export default function TimeScreen() {
   }, [fetchTimes]);
 
   const setTimeHandler = (time: string) => {
-    setSelectedTime(time);
+    const roundedTime = roundToNearest15(time);
+    setSelectedTime(roundedTime);
     setShowTimeModal(false);
-  }
+    navigation.pop();
+  };
 
   return (
     <View style={styles.container}>

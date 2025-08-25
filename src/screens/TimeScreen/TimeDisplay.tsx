@@ -53,7 +53,7 @@ export default function TimeDisplay({
 }: Props) {
   const [next30Array, setNext30Array] = useState<NextDays[]>([])
   const safeAreaInsets = useSafeAreaInsets();
-  const {  selectedTimeZone } = useTimeStore();
+  const { selectedTimeZone } = useTimeStore();
 
   useEffect(() => {
     const next30 = generateNext30Days(selectedTimeZone.timeZone);

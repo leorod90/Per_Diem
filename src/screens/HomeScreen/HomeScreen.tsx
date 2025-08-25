@@ -14,12 +14,16 @@ import { getStoreOverrides } from '../../api/StoreOverrides'
 import { StoreOverride, StoreTime } from '../../types/StoreTypes'
 import { StoreComponent } from './StoreComponent'
 import Animated, { FadeInDown } from 'react-native-reanimated'
+import CustomBtn from '../../components/CustomBtn'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "HomeScreen">;
 
 export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavProp>();
+  const safeAreaInsets = useSafeAreaInsets();
   const { selectedTimeZone, selectedTime, setSelectedTimeZone } = useTimeStore();
+
   const [greetingText, setGreetingText] = useState("");
   const [storeTimes, setStoreTimes] = useState<StoreTime[]>([]);
   const [storeOverrideTimes, setStoreOverrideTimes] = useState<StoreOverride[]>([]);
@@ -40,7 +44,6 @@ export default function HomeScreen() {
   const getStoreTimesHandler = async () => {
     const storeT = await getStoreTimes();
     const storeOverrideT = await getStoreOverrides();
-    console.log(storeT)
     setStoreTimes(storeT);
     setStoreOverrideTimes(storeOverrideT);
   }
@@ -50,7 +53,9 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, {
+      paddingBottom: safeAreaInsets.bottom
+    }]}>
       <View>
         <CustomHeading>{greetingText}</CustomHeading>
         <Animated.View
@@ -82,7 +87,11 @@ export default function HomeScreen() {
       <StoreComponent storeTimes={storeTimes} />
       <CustomText size={themes.text.sm}>You can also check future times below!</CustomText>
       <CustomText>{formatToAmPm(selectedTime)}</CustomText>
-      <TouchableOpacity onPress={navToTimeScreen}><CustomText>Check a Date</CustomText></TouchableOpacity>
+      <View style={{ flex: 1 }} />
+      <CustomBtn
+        onPress={navToTimeScreen}
+        text='Check a Date'
+      />
     </ScrollView>
   )
 }
@@ -99,5 +108,5 @@ const styles = StyleSheet.create({
   },
   timeZoneItem: {
     paddingRight: spacing(10)
-  }
+  },
 })

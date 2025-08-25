@@ -1,5 +1,6 @@
 import { addDays, format, parse, set, setHours, setMinutes } from "date-fns";
 import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { StoreOverride } from "../types/StoreTypes";
 
 export type NextDays = { month: string; day: string; year: string }
 
@@ -78,6 +79,51 @@ export function getGreeting(hour: number): string {
   if (hour >= 12 && hour <= 16) return `Good Afternoon,`;
   if (hour >= 17 && hour <= 20) return `Good Evening!`;
   return `Night Owl in`;
+}
+
+export function isStoreOpenAtTime(
+  overrides: StoreOverride[],
+  day: number,
+  month: number,
+  time: string
+): boolean {
+  const nowMinutes = time
+    .split(':')
+    .map(Number)
+    .reduce((acc, val, idx) => acc + (idx === 0 ? val * 60 : val), 0);
+
+  const exception = overrides.find(e => e.day === day && e.month === month);
+
+  if (!exception) return true;
+  if (!exception.is_open) return false;
+
+  const [startH, startM] = exception.start_time.split(':').map(Number);
+  const [endH, endM] = exception.end_time.split(':').map(Number);
+  const startMinutes = startH * 60 + startM;
+  const endMinutes = endH * 60 + endM;
+
+  if (endMinutes < startMinutes) {
+    return nowMinutes >= startMinutes || nowMinutes <= endMinutes;
+  }
+
+  return nowMinutes >= startMinutes && nowMinutes <= endMinutes;
+}
+
+export function roundToNearest15(time: string): string {
+  const [hourStr, minuteStr] = time.split(':');
+  let hour = parseInt(hourStr, 10);
+  let minutes = parseInt(minuteStr, 10);
+
+  const roundedMinutes = Math.round(minutes / 15) * 15;
+
+  if (roundedMinutes === 60) {
+    hour = (hour + 1) % 24;
+    minutes = 0;
+  } else {
+    minutes = roundedMinutes;
+  }
+
+  return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
 const LOCAL = Intl.DateTimeFormat().resolvedOptions().timeZone;
