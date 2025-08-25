@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import LoginScreen from "./src/screens/LoginScreen";
-import HomeScreen from "./src/screens/HomeScreen";
+import LoginScreen from "./src/screens/LoginScreen/LoginScreen";
+import HomeScreen from "./src/screens/HomeScreen/HomeScreen";
 import { CardStyleInterpolators, createStackNavigator } from "@react-navigation/stack";
 import { enableScreens } from "react-native-screens";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

@@ -1,13 +1,13 @@
 import { View, TextInput, StyleSheet, Pressable, Vibration, Text, Image } from 'react-native'
 import React, { useContext, useState } from 'react'
-import { AuthContext } from '../context/createContext';
+import { AuthContext } from '../../context/createContext.tsx';
 import Toast from 'react-native-toast-message';
-import CustomText from '../components/CustomText';
-import themes, { spacing } from '../themes';
-import Blob from '../../assets/svg/pattern.tsx'
-import CustomBtn from '../components/CustomBtn.tsx';
+import CustomText from '../../components/CustomText.tsx';
+import themes, { spacing } from '../../themes/index.ts';
+import Blob from '../../../assets/svg/pattern.tsx'
+import CustomBtn from '../../components/CustomBtn.tsx';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomHeading from '../components/CustomHeading.tsx';
+import CustomHeading from '../../components/CustomHeading.tsx';
 
 const BLOB_SIZE = 400;
 const GOOGLE_LOGO_SIZE = 30;
@@ -75,7 +75,7 @@ export default function LoginScreen() {
         >
           <View style={styles.googleButtonInner}>
             <Image style={styles.googleImg}
-              source={require("../../assets/imgs/google-logo.jpg")}
+              source={require("../../../assets/imgs/google-logo.jpg")}
             />
             <CustomText color={themes.colors.white}>Sign in with Google</CustomText>
           </View>
