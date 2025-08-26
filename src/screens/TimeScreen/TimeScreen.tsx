@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomText from '../../components/CustomText'
-import { getCityFromTimeZone, roundToNearest15, TIME_ZONES, TimeZones } from '../../utils/Dates'
+import { getCityFromTimeZone, NextDays, roundToNearest15, TIME_ZONES, TimeZones } from '../../utils/Dates'
 import themes, { spacing } from '../../themes'
 import TimeDisplay, { CardFadeDirection } from './TimeDisplay'
 import { TimePickerModal } from '../../components/TimePickerModal'
@@ -15,17 +15,21 @@ type TimeScreenNavProp = StackNavigationProp<RootStackParamList, "TimeScreen">;
 export default function TimeScreen() {
   const navigation = useNavigation<TimeScreenNavProp>();
 
-  const { fetchTimes, selectedTimeZone, setSelectedTime, setSelectedTimeZone } = useTimeStore();
-
+  const { fetchTimes, selectedTimeZone, setSelectedTime, setSelectedTimeZone, setSelectedDate } = useTimeStore();
   const [showTimeModal, setShowTimeModal] = useState(false);
+  const [tempDate, setTempDate] = useState<NextDays>()
 
   useEffect(() => {
     fetchTimes();
   }, [fetchTimes]);
 
   const setTimeHandler = (time: string) => {
+    if (!tempDate) {
+      return
+    }
     const roundedTime = roundToNearest15(time);
     setSelectedTime(roundedTime);
+    setSelectedDate(tempDate)
     setShowTimeModal(false);
     navigation.pop();
   };
@@ -52,12 +56,14 @@ export default function TimeScreen() {
         <TimeDisplay
           key={TimeZones.Local}
           setShowTimeModal={setShowTimeModal}
+          setTempDate={setTempDate}
           fadeDirection={CardFadeDirection.RIGHT}
         />
       )}
       {selectedTimeZone.timeZone === TimeZones.LosAngeles && (
         <TimeDisplay
           key={TimeZones.LosAngeles}
+          setTempDate={setTempDate}
           setShowTimeModal={setShowTimeModal}
         />
       )}

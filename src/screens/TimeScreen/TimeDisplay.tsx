@@ -6,8 +6,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import themes, { spacing } from '../../themes';
 import CustomHeading from '../../components/CustomHeading';
 import CustomText from '../../components/CustomText';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { TimePickerModal } from '../../components/TimePickerModal';
 import { useTimeStore } from '../../store/useTimeStore';
 
 const FLAT_DELAY = 25;
@@ -16,15 +14,15 @@ export enum CardFadeDirection {
   LEFT,
   RIGHT
 }
-
 interface TimeProps {
   item: NextDays;
   index: number;
   fadeDirection: CardFadeDirection;
-  setShowTimeModal: React.Dispatch<React.SetStateAction<boolean>>
+  setShowTimeModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setTempDate: React.Dispatch<React.SetStateAction<NextDays | undefined>>;
 }
 
-const TimeCard = ({ item, index, fadeDirection, setShowTimeModal }: TimeProps) => (
+const TimeCard = ({ item, index, fadeDirection, setShowTimeModal, setTempDate }: TimeProps) => (
   <Animated.View
     style={styles.card}
     entering={
@@ -34,7 +32,10 @@ const TimeCard = ({ item, index, fadeDirection, setShowTimeModal }: TimeProps) =
     }>
     <TouchableOpacity
       style={styles.cardInner}
-      onPress={() => setShowTimeModal(true)}
+      onPress={() => {
+        setShowTimeModal(true);
+        setTempDate(item);
+      }}
     >
       <CustomText size={themes.text.md}>{item.month}</CustomText>
       <CustomHeading>{item.day}</CustomHeading>
@@ -44,12 +45,14 @@ const TimeCard = ({ item, index, fadeDirection, setShowTimeModal }: TimeProps) =
 
 interface Props {
   fadeDirection?: CardFadeDirection;
-  setShowTimeModal: React.Dispatch<React.SetStateAction<boolean>>
+  setShowTimeModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setTempDate: React.Dispatch<React.SetStateAction<NextDays | undefined>>;
 }
 
 export default function TimeDisplay({
   fadeDirection = CardFadeDirection.LEFT,
-  setShowTimeModal
+  setShowTimeModal,
+  setTempDate
 }: Props) {
   const [next30Array, setNext30Array] = useState<NextDays[]>([])
   const safeAreaInsets = useSafeAreaInsets();
@@ -75,6 +78,7 @@ export default function TimeDisplay({
           index={index}
           fadeDirection={fadeDirection}
           setShowTimeModal={setShowTimeModal}
+          setTempDate={setTempDate}
         />
       )}
       columnWrapperStyle={styles.row}

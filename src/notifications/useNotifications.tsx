@@ -34,7 +34,6 @@ export function useNotification() {
     }
   };
 
-  // Function to test notification
   const testNotification = async () => {
     try {
       await createAndroidChannel();

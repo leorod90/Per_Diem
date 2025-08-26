@@ -8,7 +8,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import { RootStackParamList } from '../../types/DefaultScreenType'
 import CustomHeading from '../../components/CustomHeading'
 import { format, toZonedTime } from 'date-fns-tz'
-import { formatToAmPm, getCityFromTimeZone, getGreeting, TIME_ZONES, TimeZones } from '../../utils/Dates'
+import { formatToAmPm, getCityFromTimeZone, getGreeting, isDateTimeClosedOverride, TIME_ZONES, TimeZones } from '../../utils/Dates'
 import { getStoreTimes } from '../../api/StoreTimeAPI'
 import { getStoreOverrides } from '../../api/StoreOverrides'
 import { StoreOverride, StoreTime } from '../../types/StoreTypes'
@@ -22,7 +22,7 @@ type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "HomeScreen">;
 export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavProp>();
   const safeAreaInsets = useSafeAreaInsets();
-  const { selectedTimeZone, selectedTime, setSelectedTimeZone } = useTimeStore();
+  const { selectedTimeZone, selectedTime, setSelectedTimeZone, selectedDate } = useTimeStore();
 
   const [greetingText, setGreetingText] = useState("");
   const [storeTimes, setStoreTimes] = useState<StoreTime[]>([]);
@@ -46,12 +46,20 @@ export default function HomeScreen() {
     const storeOverrideT = await getStoreOverrides();
     setStoreTimes(storeT);
     setStoreOverrideTimes(storeOverrideT);
+
   }
 
   const navToTimeScreen = () => {
     navigation.navigate("TimeScreen");
   }
 
+  useEffect(() => {
+    if (selectedTime && selectedDate && storeOverrideTimes) {
+      const isClosedTest = isDateTimeClosedOverride(selectedDate, selectedTime, storeOverrideTimes);
+      console.log(!isClosedTest)
+    }
+  }, [selectedTime, selectedDate, storeOverrideTimes])
+  
   return (
     <ScrollView contentContainerStyle={[styles.container, {
       paddingBottom: safeAreaInsets.bottom
@@ -86,7 +94,7 @@ export default function HomeScreen() {
       </View>
       <StoreComponent storeTimes={storeTimes} />
       <CustomText size={themes.text.sm}>You can also check future times below!</CustomText>
-      <CustomText>{formatToAmPm(selectedTime)}</CustomText>
+      <CustomText size={themes.text.sm}>{formatToAmPm(selectedTime)}</CustomText>
       <View style={{ flex: 1 }} />
       <CustomBtn
         onPress={navToTimeScreen}
