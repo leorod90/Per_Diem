@@ -19,6 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import OpenLight from '../../components/OpenLight'
 import { useNotification } from '../../notifications/useNotifications'
 import BellIcon from '../../../assets/svg/notification'
+import Toast from 'react-native-toast-message'
 
 type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "HomeScreen">;
 
@@ -54,6 +55,11 @@ export default function HomeScreen() {
 
   const notificationHandler = async () => {
     await testNotification();
+    Toast.show({
+      type: 'success',
+      text1: 'Notification Set',
+      text2: 'We will remind you when we are about to open!',
+    });
     // await scheduleStoreReminder(storeTimes);
   }
 

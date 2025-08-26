@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Vibration } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { createUser, verifyUser, User } from '../api/AuthAPI';
-import { onGoogleButtonPress } from '../api/firebase';
+import { onGoogleButtonPress } from '../api/Firebase';
 
 const PATTERN = 100;
 const STORAGE_TOKEN_KEY = '@per_diem/auth_token';
