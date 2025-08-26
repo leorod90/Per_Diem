@@ -59,7 +59,7 @@ export const useTimeStore = create<TimeState>((set, get) => ({
     }
 
     const { selectedDate } = currentState; 
-    console.log(selectedDate)
+
     if (convertedTime && selectedDate) {
       const isStoreOpen = await checkIfOpenOnDate(convertedTime, selectedDate);
 

@@ -5,5 +5,5 @@
 
 ### swagger
 - the get day api says (0-6), but in the get all its (1-7), this caused me a few issues correctly displaying the correct closed dates
-- also the get all has an empty obj as well as a duplicate day
+- also the get all has an empty obj as well as a duplicate day for fridays
 - some spelling mistakes in curl command'http://https://coding...'

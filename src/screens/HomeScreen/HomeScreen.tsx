@@ -93,7 +93,11 @@ export default function HomeScreen() {
           {TIME_ZONES.map((item) => (
             <TouchableOpacity
               key={item.timeZone}
-              onPress={() => setSelectedTimeZone(item)}
+              onPress={() => {
+                if (selectedTimeZone.timeZone === item.timeZone) return;
+                setSelectedTimeZone(item)
+              }}
+              disabled={selectedTimeZone.timeZone === item.timeZone}
               style={[
                 styles.timeZoneItem,
                 {
