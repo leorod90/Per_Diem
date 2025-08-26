@@ -17,6 +17,7 @@ import Animated, { FadeInDown, FadeInLeft, FadeInRight } from 'react-native-rean
 import CustomBtn from '../../components/CustomBtn'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import OpenLight from '../../components/OpenLight'
+import { useNotification } from '../../notifications/useNotifications'
 
 type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "HomeScreen">;
 
@@ -24,6 +25,7 @@ export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavProp>();
   const safeAreaInsets = useSafeAreaInsets();
   const { selectedTimeZone, selectedTime, setSelectedTimeZone, selectedDate } = useTimeStore();
+  const { scheduleStoreReminder } = useNotification();
 
   const [greetingText, setGreetingText] = useState("");
   const [storeTimes, setStoreTimes] = useState<StoreTime[]>([]);
@@ -45,9 +47,9 @@ export default function HomeScreen() {
   const getStoreTimesHandler = async () => {
     const storeT = await getStoreTimes();
     const storeOverrideT = await getStoreOverrides();
+    await scheduleStoreReminder(storeT);
     setStoreTimes(storeT);
     setStoreOverrideTimes(storeOverrideT);
-
   }
 
   const navToTimeScreen = () => {
@@ -75,7 +77,7 @@ export default function HomeScreen() {
           key={greetingText}
           entering={FadeInRight}
         >
-        <CustomHeading>{greetingText}</CustomHeading>
+          <CustomHeading>{greetingText}</CustomHeading>
         </Animated.View>
         <Animated.View
           key={selectedTimeZone.label}
