@@ -1,7 +1,7 @@
 // store/timeStore.ts
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { convertTimeToTimeZone, NextDays, TIME_ZONES, TimeZones, TimeZoneType } from "../utils/Dates";
+import { checkIfOpenOnDate, convertTimeToTimeZone, NextDays, TIME_ZONES, TimeZones, TimeZoneType } from "../utils/Dates";
 
 const STORAGE_TIME_KEY = '@per_diem/time_token';
 const STORAGE_TIME_ZONE_KEY = '@per_diem/time_zone_token';
@@ -14,7 +14,7 @@ interface TimeState {
   setSelectedTimeZone: (zone: TimeZoneType) => Promise<void>;
   setSelectedTime: (time: string) => Promise<void>;
   setSelectedDate: (date: NextDays) => Promise<void>;
-  resetDates: () => Promise<void>; 
+  resetDates: () => Promise<void>;
   fetchTimes: () => Promise<void>;
 }
 
@@ -25,8 +25,11 @@ export const useTimeStore = create<TimeState>((set, get) => ({
 
   setSelectedTimeZone: async (zone: TimeZoneType) => {
     const currentState = get();
+
+    // Save the selected timezone
     await AsyncStorage.setItem(STORAGE_TIME_ZONE_KEY, JSON.stringify(zone));
 
+    // Convert time if needed
     let convertedTime = currentState.selectedTime;
     if (currentState.selectedTime && currentState.selectedTimeZone) {
       if (zone.timeZone === TimeZones.Local) {
@@ -44,13 +47,25 @@ export const useTimeStore = create<TimeState>((set, get) => ({
       }
     }
 
+    // Update state
     set({
       selectedTimeZone: zone,
-      selectedTime: convertedTime
+      selectedTime: convertedTime,
     });
 
+    // Save converted time
     if (convertedTime) {
       await AsyncStorage.setItem(STORAGE_TIME_KEY, convertedTime);
+    }
+
+    const { selectedDate } = currentState; 
+    console.log(selectedDate)
+    if (convertedTime && selectedDate) {
+      const isStoreOpen = await checkIfOpenOnDate(convertedTime, selectedDate);
+
+      set({
+        selectedDate: { ...selectedDate, isStoreOpen },
+      });
     }
   },
 
@@ -84,3 +99,7 @@ export const useTimeStore = create<TimeState>((set, get) => ({
     });
   },
 }));
+function setSelectedDate(arg0: any) {
+  throw new Error("Function not implemented.");
+}
+
