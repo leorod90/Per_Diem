@@ -4,7 +4,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import themes from "../../themes";
 import CustomText from "../../components/CustomText";
 import CustomHeading from "../../components/CustomHeading";
-import { formatToAmPm } from "../../utils/Dates";
+import { formatToAmPm, getDayName } from "../../utils/Dates";
 import { DayOfWeek } from "../../types/StoreTypes";
 
 interface StoreTime {
@@ -14,18 +14,6 @@ interface StoreTime {
   is_open?: boolean;
   id: string;
 }
-
-const dayName = (day: DayOfWeek) => {
-  switch (day) {
-    case DayOfWeek.SUNDAY: return "Sun";
-    case DayOfWeek.MONDAY: return "Mon";
-    case DayOfWeek.TUESDAY: return "Tue";
-    case DayOfWeek.WEDNESDAY: return "Wed";
-    case DayOfWeek.THURSDAY: return "Thu";
-    case DayOfWeek.FRIDAY: return "Fri";
-    case DayOfWeek.SATURDAY: return "Sat";
-  }
-};
 
 interface Props {
   storeTimes: StoreTime[];
@@ -41,7 +29,7 @@ export const StoreComponent: React.FC<Props> = ({ storeTimes }) => {
 
     return (
       <Animated.View entering={FadeIn} style={styles.row} key={dayIndex}>
-        <CustomHeading size={themes.text.sm} style={styles.dayLabel}>{dayName(dayIndex)}</CustomHeading>
+        <CustomHeading size={themes.text.sm} style={styles.dayLabel}>{getDayName(dayIndex)}</CustomHeading>
         <CustomText size={themes.text.sm} style={styles.timeText} color={themes.colors.grayDark}>{isOpen ? `${start} - ${end}` : "Closed"}</CustomText>
         <View
           style={[

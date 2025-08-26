@@ -6,6 +6,7 @@ export type NextDays = {
   month: string;
   day: string;
   year: string;
+  dayName:string;
   dayNum: number;
   monthNum: number;
 }
@@ -25,6 +26,7 @@ export const generateNext30Days = (timezone: string) => {
       month: format(zonedDate, "LLL"),
       day: format(zonedDate, "dd"),
       year: format(zonedDate, "yy"),
+      dayName: format(zonedDate, "EEE"),
       dayNum,
       monthNum,
     });
@@ -126,11 +128,11 @@ export function isDateTimeClosedOverride(selectedDate, selectedTime, closedPerio
   // Parse the selected date
   const selectedDay = parseInt(selectedDate.day);
   const selectedMonth = parseInt(selectedDate.monthNum);
-  
+
   // Parse the selected time (assuming format like "18:45")
   const [selectedHour, selectedMinute] = selectedTime.split(':').map(Number);
   const selectedTimeInMinutes = selectedHour * 60 + selectedMinute;
-  
+
   // Check each closed period
   for (const period of closedPeriods) {
     // Only check periods that are marked as closed (is_open: false)
@@ -140,10 +142,10 @@ export function isDateTimeClosedOverride(selectedDate, selectedTime, closedPerio
         // Parse start and end times
         const [startHour, startMinute] = period.start_time.split(':').map(Number);
         const [endHour, endMinute] = period.end_time.split(':').map(Number);
-        
+
         const startTimeInMinutes = startHour * 60 + startMinute;
         const endTimeInMinutes = endHour * 60 + endMinute;
-        
+
         // Handle edge cases for time comparison
         if (startTimeInMinutes === endTimeInMinutes) {
           // All day closure (like 00:00 to 00:00)
@@ -162,7 +164,7 @@ export function isDateTimeClosedOverride(selectedDate, selectedTime, closedPerio
       }
     }
   }
-  
+
   return false;
 }
 
@@ -183,6 +185,18 @@ export function roundToNearest15(time: string): string {
 
   return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
+
+export const getDayName = (day: DayOfWeek) => {
+  switch (day) {
+    case DayOfWeek.SUNDAY: return "Sun";
+    case DayOfWeek.MONDAY: return "Mon";
+    case DayOfWeek.TUESDAY: return "Tue";
+    case DayOfWeek.WEDNESDAY: return "Wed";
+    case DayOfWeek.THURSDAY: return "Thu";
+    case DayOfWeek.FRIDAY: return "Fri";
+    case DayOfWeek.SATURDAY: return "Sat";
+  }
+};
 
 const LOCAL = Intl.DateTimeFormat().resolvedOptions().timeZone;
 

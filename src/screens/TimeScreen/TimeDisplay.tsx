@@ -39,6 +39,7 @@ const TimeCard = ({ item, index, fadeDirection, setShowTimeModal, setTempDate }:
     >
       <CustomText size={themes.text.md}>{item.month}</CustomText>
       <CustomHeading>{item.day}</CustomHeading>
+      <CustomText color={themes.colors.grayDark} size={themes.text.sm}>{item.dayName}</CustomText>
     </TouchableOpacity>
   </Animated.View>
 )
