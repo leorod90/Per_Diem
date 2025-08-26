@@ -8,14 +8,15 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import { RootStackParamList } from '../../types/DefaultScreenType'
 import CustomHeading from '../../components/CustomHeading'
 import { format, toZonedTime } from 'date-fns-tz'
-import { formatToAmPm, getCityFromTimeZone, getGreeting, isDateTimeClosedOverride, TIME_ZONES, TimeZones } from '../../utils/Dates'
+import { checkIfOpenOnDate, formatToAmPm, getCityFromTimeZone, getGreeting, isDateTimeClosedOverride, NextDays, TIME_ZONES, TimeZones } from '../../utils/Dates'
 import { getStoreTimes } from '../../api/StoreTimeAPI'
 import { getStoreOverrides } from '../../api/StoreOverrides'
 import { StoreOverride, StoreTime } from '../../types/StoreTypes'
 import { StoreComponent } from './StoreComponent'
-import Animated, { FadeInDown } from 'react-native-reanimated'
+import Animated, { FadeInDown, FadeInLeft, FadeInRight } from 'react-native-reanimated'
 import CustomBtn from '../../components/CustomBtn'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import OpenLight from '../../components/OpenLight'
 
 type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "HomeScreen">;
 
@@ -27,6 +28,7 @@ export default function HomeScreen() {
   const [greetingText, setGreetingText] = useState("");
   const [storeTimes, setStoreTimes] = useState<StoreTime[]>([]);
   const [storeOverrideTimes, setStoreOverrideTimes] = useState<StoreOverride[]>([]);
+  const [isStoreOpen, setIsStoreOpen] = useState<boolean>();
 
   useEffect(() => {
     const now = new Date();
@@ -39,7 +41,6 @@ export default function HomeScreen() {
   useEffect(() => {
     getStoreTimesHandler();
   }, [])
-
 
   const getStoreTimesHandler = async () => {
     const storeT = await getStoreTimes();
@@ -54,18 +55,28 @@ export default function HomeScreen() {
   }
 
   useEffect(() => {
-    if (selectedTime && selectedDate && storeOverrideTimes) {
-      const isClosedTest = isDateTimeClosedOverride(selectedDate, selectedTime, storeOverrideTimes);
-      console.log(!isClosedTest)
+    const checkIsOpenHandler = async (time: string, date: NextDays) => {
+      const isOpen = await checkIfOpenOnDate(time, date);
+      setIsStoreOpen(isOpen);
     }
-  }, [selectedTime, selectedDate, storeOverrideTimes])
-  
+
+    if (selectedTime && selectedDate) {
+      checkIsOpenHandler(selectedTime, selectedDate);
+    }
+  }, [selectedTime, selectedDate]);
+
+
   return (
     <ScrollView contentContainerStyle={[styles.container, {
       paddingBottom: safeAreaInsets.bottom
     }]}>
       <View>
+        <Animated.View
+          key={greetingText}
+          entering={FadeInRight}
+        >
         <CustomHeading>{greetingText}</CustomHeading>
+        </Animated.View>
         <Animated.View
           key={selectedTimeZone.label}
           entering={FadeInDown}
@@ -94,7 +105,18 @@ export default function HomeScreen() {
       </View>
       <StoreComponent storeTimes={storeTimes} />
       <CustomText size={themes.text.sm}>You can also check future times below!</CustomText>
-      <CustomText size={themes.text.sm}>{formatToAmPm(selectedTime)}</CustomText>
+      {selectedTime && selectedDate?.year ? (
+        <>
+          <CustomText size={themes.text.sm}>{selectedDate.dayName}, {selectedDate?.day} {formatToAmPm(selectedTime)}</CustomText>
+          <View style={styles.openRow}>
+            <CustomText size={themes.text.sm}>We are {isStoreOpen ? "Open" : "Closed"}</CustomText>
+            <OpenLight isOpen={isStoreOpen!} />
+          </View>
+        </>
+      ) : (
+        <CustomText size={themes.text.sm}>Please Select a Date</CustomText>
+      )}
+
       <View style={{ flex: 1 }} />
       <CustomBtn
         onPress={navToTimeScreen}
@@ -117,4 +139,9 @@ const styles = StyleSheet.create({
   timeZoneItem: {
     paddingRight: spacing(10)
   },
+  openRow: {
+    gap: spacing(6),
+    flexDirection: 'row',
+    alignItems: 'center'
+  }
 })

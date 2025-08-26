@@ -1,12 +1,14 @@
-import { addDays, format, Month, set } from "date-fns";
+import { addDays, format, isAfter, isBefore, Month, parse, set } from "date-fns";
 import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
-import { DayOfWeek, StoreOverride } from "../types/StoreTypes";
+import { DayOfWeek, StoreOverride, StoreTime } from "../types/StoreTypes";
+import { getStoreTimesByDay } from "../api/StoreTimeAPI";
+import { getStoreOverridesByMonthAndDay } from "../api/StoreOverrides";
 
 export type NextDays = {
   month: string;
   day: string;
   year: string;
-  dayName:string;
+  dayName: string;
   dayNum: number;
   monthNum: number;
 }
@@ -51,7 +53,7 @@ export function generateTimeSlots(interval = 15) {
   return slots;
 }
 
-export function formatToAmPm(time24: string | undefined): string {
+export function formatToAmPm(time24: string | undefined): string| null {
   try {
     const [hourStr, minuteStr] = time24!.split(':');
     let hour = parseInt(hourStr, 10);
@@ -63,7 +65,7 @@ export function formatToAmPm(time24: string | undefined): string {
 
     return `${hour}:${minute} ${ampm}`;
   } catch (error) {
-    return "Please select a time."
+    return null;
   }
 }
 
@@ -95,79 +97,48 @@ export function getGreeting(hour: number): string {
   return `Night Owl in`;
 }
 
-export function isStoreOpenAtTime(
-  overrides: StoreOverride[],
-  day: number,
-  month: number,
-  time: string
-): boolean {
-  const nowMinutes = time
-    .split(':')
-    .map(Number)
-    .reduce((acc, val, idx) => acc + (idx === 0 ? val * 60 : val), 0);
-
-  const exception = overrides.find(e => e.day === day && e.month === month);
-
-  if (!exception) return true;
-  if (!exception.is_open) return false;
-
-  const [startH, startM] = exception.start_time.split(':').map(Number);
-  const [endH, endM] = exception.end_time.split(':').map(Number);
-  const startMinutes = startH * 60 + startM;
-  const endMinutes = endH * 60 + endM;
-
-  if (endMinutes < startMinutes) {
-    return nowMinutes >= startMinutes || nowMinutes <= endMinutes;
-  }
-
-  return nowMinutes >= startMinutes && nowMinutes <= endMinutes;
+interface StoreTimeCheck {
+  start_time: string;
+  end_time: string;
+  is_open: boolean;
 }
 
+export const checkIfOpenOnDate = async (
+  selectedTime: string,
+  selectedDate: NextDays
+): Promise<boolean> => {
+  try {
+    const dayOfWeekData: StoreTimeCheck[] = await getStoreTimesByDay(selectedDate.dayNum);
+    const overrideData: StoreTimeCheck[] | null = await getStoreOverridesByMonthAndDay(
+      selectedDate.monthNum,
+      selectedDate.dayNum
+    );
 
-export function isDateTimeClosedOverride(selectedDate, selectedTime, closedPeriods) {
-  // Parse the selected date
-  const selectedDay = parseInt(selectedDate.day);
-  const selectedMonth = parseInt(selectedDate.monthNum);
+    const checkOpen = (storeTimes: StoreTimeCheck[]) => {
+      for (const time of storeTimes) {
+        if (!time.is_open || !time.start_time || !time.end_time) continue;
 
-  // Parse the selected time (assuming format like "18:45")
-  const [selectedHour, selectedMinute] = selectedTime.split(':').map(Number);
-  const selectedTimeInMinutes = selectedHour * 60 + selectedMinute;
+        const selected = parse(selectedTime, "HH:mm", new Date());
+        const start = parse(time.start_time, "HH:mm", new Date());
+        const end = parse(time.end_time, "HH:mm", new Date());
 
-  // Check each closed period
-  for (const period of closedPeriods) {
-    // Only check periods that are marked as closed (is_open: false)
-    if (period.is_open === false) {
-      // Check if the date matches
-      if (period.day === selectedDay && period.month === selectedMonth) {
-        // Parse start and end times
-        const [startHour, startMinute] = period.start_time.split(':').map(Number);
-        const [endHour, endMinute] = period.end_time.split(':').map(Number);
-
-        const startTimeInMinutes = startHour * 60 + startMinute;
-        const endTimeInMinutes = endHour * 60 + endMinute;
-
-        // Handle edge cases for time comparison
-        if (startTimeInMinutes === endTimeInMinutes) {
-          // All day closure (like 00:00 to 00:00)
+        if (isAfter(selected, start) && isBefore(selected, end)) {
           return true;
-        } else if (endTimeInMinutes < startTimeInMinutes) {
-          // Time spans midnight (e.g., 23:00 to 02:00)
-          if (selectedTimeInMinutes >= startTimeInMinutes || selectedTimeInMinutes <= endTimeInMinutes) {
-            return true;
-          }
-        } else {
-          // Normal time range within the same day
-          if (selectedTimeInMinutes >= startTimeInMinutes && selectedTimeInMinutes <= endTimeInMinutes) {
-            return true;
-          }
         }
       }
+      return false;
+    };
+
+    if (overrideData && overrideData.length) {
+      return checkOpen(overrideData); 
     }
+
+    return checkOpen(dayOfWeekData);
+  } catch (error) {
+    console.error(error);
+    return false;
   }
-
-  return false;
-}
-
+};
 
 export function roundToNearest15(time: string): string {
   const [hourStr, minuteStr] = time.split(':');

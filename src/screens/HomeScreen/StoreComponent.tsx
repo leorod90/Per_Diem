@@ -6,6 +6,7 @@ import CustomText from "../../components/CustomText";
 import CustomHeading from "../../components/CustomHeading";
 import { formatToAmPm, getDayName } from "../../utils/Dates";
 import { DayOfWeek } from "../../types/StoreTypes";
+import OpenLight from "../../components/OpenLight";
 
 interface StoreTime {
   day_of_week?: number;
@@ -31,12 +32,7 @@ export const StoreComponent: React.FC<Props> = ({ storeTimes }) => {
       <Animated.View entering={FadeIn} style={styles.row} key={dayIndex}>
         <CustomHeading size={themes.text.sm} style={styles.dayLabel}>{getDayName(dayIndex)}</CustomHeading>
         <CustomText size={themes.text.sm} style={styles.timeText} color={themes.colors.grayDark}>{isOpen ? `${start} - ${end}` : "Closed"}</CustomText>
-        <View
-          style={[
-            styles.statusCircle,
-            { backgroundColor: isOpen ? themes.colors.accent : themes.colors.danger },
-          ]}
-        />
+        <OpenLight isOpen={isOpen}/>
       </Animated.View>
     );
   };
@@ -59,9 +55,5 @@ const styles = StyleSheet.create({
   timeText: {
     flex: 2,
   },
-  statusCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-  },
+
 });

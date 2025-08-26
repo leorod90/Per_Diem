@@ -25,7 +25,16 @@ export const deleteIndividualStoreOverride = async (id: string): Promise<void> =
   await axiosInstance.delete(`/store-overrides/${id}`);
 };
 
-export const getStoreOverridesByMonthAndDay = async (month: Month, day: number): Promise<StoreOverride[]> => {
-  const { data } = await axiosInstance.get<StoreOverride[]>(`/store-overrides/date/${month}/${day}`);
-  return data;
+export const getStoreOverridesByMonthAndDay = async (
+  month: Month,
+  day: number
+): Promise<StoreOverride[] | null> => {
+  try {
+    const { data } = await axiosInstance.get<StoreOverride[]>(
+      `/store-overrides/date/${month}/${day}`
+    );
+    return data;
+  } catch (error) {
+    return null;
+  }
 };

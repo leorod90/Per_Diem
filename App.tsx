@@ -13,6 +13,8 @@ import TimeScreen from "./src/screens/TimeScreen/TimeScreen";
 import { RootStackParamList } from "./src/types/DefaultScreenType";
 import { useTimeStore } from "./src/store/useTimeStore";
 import { useNotification } from "./src/notifications/useNotifications";
+import CloseIcon from "./assets/svg/close-x";
+import { TouchableOpacity, View } from "react-native";
 
 enableScreens();
 
@@ -49,6 +51,13 @@ function RootNavigator() {
             component={TimeScreen}
             options={{
               presentation: "modal",
+              header: ({ navigation }) => (
+                <View style={{ padding: themes.sizing.defaultPadding }}>
+                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <CloseIcon size={28} color="black" />
+                  </TouchableOpacity>
+                </View>
+              ),
             }}
           />
         </>
