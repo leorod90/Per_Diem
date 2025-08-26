@@ -107,7 +107,7 @@ export default function HomeScreen() {
       <CustomText size={themes.text.sm}>You can also check future times below!</CustomText>
       {selectedTime && selectedDate?.year ? (
         <>
-          <CustomText size={themes.text.sm}>{selectedDate.dayName}, {selectedDate?.day} {formatToAmPm(selectedTime)}</CustomText>
+          <CustomText size={themes.text.sm}>{selectedDate.dayName}, {selectedDate?.month} {selectedDate?.day} {formatToAmPm(selectedTime)}</CustomText>
           <View style={styles.openRow}>
             <CustomText size={themes.text.sm}>We are {isStoreOpen ? "Open" : "Closed"}</CustomText>
             <OpenLight isOpen={isStoreOpen!} />
@@ -128,7 +128,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: themes.sizing.defaultPadding,
     gap: spacing(8),
   },

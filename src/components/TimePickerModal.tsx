@@ -20,17 +20,21 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
   const [time, setTime] = useState(initialTime);
 
   const handleChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    if (selectedDate) {
+    if (event.type === 'dismissed') {
+      onCancel();
+    } else if (selectedDate) {
       setTime(selectedDate);
+
       // Android: confirm immediately when user presses OK
       if (Platform.OS === 'android' && event.type === 'set') {
-        onConfirm(format(time, 'HH:mm'));
+        onConfirm(format(selectedDate, 'HH:mm')); // ✅ use selectedDate directly
       }
     } else {
       // Android: cancel pressed
       if (Platform.OS === 'android') onCancel();
     }
   };
+
 
   if (Platform.OS === 'ios') {
     return (

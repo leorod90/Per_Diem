@@ -1,6 +1,6 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import CustomText from '../CustomText';
 import themes from '../../themes';
 import CustomBtn from '../CustomBtn';
@@ -10,6 +10,7 @@ import { useTimeStore } from '../../store/useTimeStore';
 export default function Header() {
   const { user, signOut } = useAuthStore();
   const { resetDates } = useTimeStore();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const signOutHandler = () => {
     signOut();
@@ -17,7 +18,9 @@ export default function Header() {
   }
 
   return (
-    <SafeAreaView style={styles.safeStyle}>
+    <View style={[styles.safeStyle, {
+      marginTop: safeAreaInsets.top
+    }]}>
       <CustomText>Welcome, {user?.name}</CustomText>
       <CustomBtn
         text='Logout'
@@ -25,7 +28,7 @@ export default function Header() {
         bgColor={themes.colors.danger}
         txtColor={themes.colors.white}
       />
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -34,6 +37,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: themes.sizing.defaultPadding
+    padding: themes.sizing.defaultPadding,
   }
 })
