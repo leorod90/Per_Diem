@@ -18,6 +18,7 @@ import CustomBtn from '../../components/CustomBtn'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import OpenLight from '../../components/OpenLight'
 import { useNotification } from '../../notifications/useNotifications'
+import BellIcon from '../../../assets/svg/notification'
 
 type HomeScreenNavProp = StackNavigationProp<RootStackParamList, "HomeScreen">;
 
@@ -25,7 +26,7 @@ export default function HomeScreen() {
   const navigation = useNavigation<HomeScreenNavProp>();
   const safeAreaInsets = useSafeAreaInsets();
   const { selectedTimeZone, selectedTime, setSelectedTimeZone, selectedDate } = useTimeStore();
-  const { scheduleStoreReminder } = useNotification();
+  const { scheduleStoreReminder, testNotification } = useNotification();
 
   const [greetingText, setGreetingText] = useState("");
   const [storeTimes, setStoreTimes] = useState<StoreTime[]>([]);
@@ -47,9 +48,13 @@ export default function HomeScreen() {
   const getStoreTimesHandler = async () => {
     const storeT = await getStoreTimes();
     const storeOverrideT = await getStoreOverrides();
-    await scheduleStoreReminder(storeT);
     setStoreTimes(storeT);
     setStoreOverrideTimes(storeOverrideT);
+  }
+
+  const notificationHandler = async () => {
+    await testNotification();
+    // await scheduleStoreReminder(storeTimes);
   }
 
   const navToTimeScreen = () => {
@@ -83,27 +88,32 @@ export default function HomeScreen() {
           key={selectedTimeZone.label}
           entering={FadeInDown}
         >
-          <CustomHeading>{selectedTimeZone.label}!</CustomHeading>
+          <CustomHeading color={themes.colors.primary}>{selectedTimeZone.label}!</CustomHeading>
         </Animated.View>
       </View>
       <CustomText size={themes.text.sm}>We are proud to announce our new Perdiem store! We have stores open
         in {TIME_ZONES[0].label} and {TIME_ZONES[1].label}. Check out our store hours.
       </CustomText>
-      <View style={styles.timeZoneContainer}>
-        {TIME_ZONES.map((item) => (
-          <TouchableOpacity
-            key={item.timeZone}
-            onPress={() => setSelectedTimeZone(item)}
-            style={[
-              styles.timeZoneItem,
-              {
-                opacity: selectedTimeZone.timeZone === item.timeZone ? 1 : .4
-              }
-            ]}
-          >
-            <CustomText>{getCityFromTimeZone(item.timeZone)}</CustomText>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.tabsAndNotifyWrapper}>
+        <View style={styles.timeZoneContainer}>
+          {TIME_ZONES.map((item) => (
+            <TouchableOpacity
+              key={item.timeZone}
+              onPress={() => setSelectedTimeZone(item)}
+              style={[
+                styles.timeZoneItem,
+                {
+                  opacity: selectedTimeZone.timeZone === item.timeZone ? 1 : .4,
+                  borderBottomWidth: 1,
+                  borderColor: selectedTimeZone.timeZone === item.timeZone ? themes.colors.primary : "transparent",
+                }
+              ]}
+            >
+              <CustomText>{getCityFromTimeZone(item.timeZone)}</CustomText>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <BellIcon onPress={notificationHandler} />
       </View>
       <StoreComponent storeTimes={storeTimes} />
       <CustomText size={themes.text.sm}>You can also check future times below!</CustomText>
@@ -134,12 +144,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: themes.sizing.defaultPadding,
     gap: spacing(8),
   },
+  tabsAndNotifyWrapper: {
+    flexDirection: "row",
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: spacing(16),
+  },
   timeZoneContainer: {
     flexDirection: "row",
     gap: spacing(2),
   },
   timeZoneItem: {
-    paddingRight: spacing(10)
+    marginRight: spacing(10)
   },
   openRow: {
     gap: spacing(6),

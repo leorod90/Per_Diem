@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
-import themes from "../../themes";
+import themes, { spacing } from "../../themes";
 import CustomText from "../../components/CustomText";
 import CustomHeading from "../../components/CustomHeading";
 import { formatToAmPm, getDayName } from "../../utils/Dates";
@@ -42,12 +42,12 @@ export const StoreComponent: React.FC<Props> = ({ storeTimes }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: spacing(16),
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: spacing(12),
   },
   dayLabel: {
     flex: 1,

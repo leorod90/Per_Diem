@@ -44,7 +44,9 @@ export default function TimeScreen() {
             style={[
               styles.timeZoneItem,
               {
-                opacity: selectedTimeZone.timeZone === item.timeZone ? 1 : .4
+                opacity: selectedTimeZone.timeZone === item.timeZone ? 1 : .4,
+                borderBottomWidth: 2,
+                borderColor: selectedTimeZone.timeZone === item.timeZone ? themes.colors.primary : "transparent",
               }
             ]}
           >

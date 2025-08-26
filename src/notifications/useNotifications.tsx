@@ -2,10 +2,13 @@
 import { useEffect } from 'react';
 import { Alert, Platform } from 'react-native';
 import notifee, { AndroidImportance, TimestampTrigger, TriggerType } from '@notifee/react-native';
-import { addDays, format, isAfter, isBefore, set, subHours } from 'date-fns';
+import { addDays, format, isAfter, isBefore, set, subHours, subMinutes } from 'date-fns';
 import { StoreTime } from '../types/StoreTypes';
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz';
 import { TimeZones } from '../utils/Dates';
+
+const TEST_DELAY =  5000 // 5 seconds;
+const  DELAY_BEFORE = 60; // in minutes
 
 export function useNotification() {
   // Request permission for notifications
@@ -44,13 +47,13 @@ export function useNotification() {
 
       const trigger: TimestampTrigger = {
         type: TriggerType.TIMESTAMP,
-        timestamp: Date.now() + 10000,
+        timestamp: Date.now() + TEST_DELAY,
       };
 
       await notifee.createTriggerNotification({
         id: 'test-reminder',
         title: 'Test Notification',
-        body: 'This is a test notification after 10 seconds!',
+        body: 'This is a test notification!',
         android: {
           channelId: 'default',
         },
@@ -59,13 +62,12 @@ export function useNotification() {
         },
       }, trigger);
 
-      console.log('Notification scheduled (will override previous one)');
     } catch (err) {
       console.error('Error scheduling notification:', err);
     }
   };
 
-  const scheduleStoreReminder = async (storeHours: StoreTime[], timezone = TimeZones.LosAngeles) => {
+  const scheduleStoreReminder = async (storeHours: StoreTime[], timezone = TimeZones.Local) => {
     try {
       await createAndroidChannel();
 
@@ -115,8 +117,8 @@ export function useNotification() {
       }
 
       // Schedule notification 1 hour before opening
-      const notificationTime = subHours(nextOpeningTime, 1);
-
+      // const notificationTime = subHours(nextOpeningTime, 1);
+      const notificationTime = subMinutes(nextOpeningTime, DELAY_BEFORE);
       // Don't schedule if notification time is in the past
       if (isBefore(notificationTime, nowInTimezone)) {
         console.log('Notification time would be in the past');
