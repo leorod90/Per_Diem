@@ -1,5 +1,5 @@
 import { addDays, format, isAfter, isBefore, Month, parse, set } from "date-fns";
-import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { toZonedTime, formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 import { DayOfWeek, StoreOverride, StoreTime } from "../types/StoreTypes";
 import { getStoreTimesByDay } from "../api/StoreTimeAPI";
 import { getStoreOverridesByMonthAndDay } from "../api/StoreOverrides";
@@ -76,20 +76,32 @@ export const getCityFromTimeZone = (timezone: string): string => {
   return parts[1].replace(/_/g, ' ');
 };
 
+export interface ConvertNextDays extends NextDays{
+  time:string;
+}
+
 export const convertTimeToTimeZone = (
   time: string,
   fromTZ: string,
-  toTZ: string
-): string => {
-  const today = new Date();
-  const [hours, minutes] = time.split(':').map(Number);
+  toTZ: string,
+  referenceDate?: Date,
+) => {
+  const [hours, minutes] = time.split(":").map(Number);
+  
+  const baseDate = set(referenceDate ?? new Date(), { hours, minutes, seconds: 0, milliseconds: 0 });
+  const sourceDate = fromZonedTime(baseDate, fromTZ);
 
-  const baseDate = set(today, { hours, minutes, seconds: 0, milliseconds: 0 });
-  const utcDate = fromZonedTime(baseDate, fromTZ);
-  const converted = formatInTimeZone(utcDate, toTZ, 'HH:mm');
-
-  return converted;
+  return {
+    day: formatInTimeZone(sourceDate, toTZ, "dd"),
+    dayName: formatInTimeZone(sourceDate, toTZ, "EEE"),
+    dayNum: Number(formatInTimeZone(sourceDate, toTZ, "e")),
+    month: formatInTimeZone(sourceDate, toTZ, "MMM"),
+    monthNum: Number(formatInTimeZone(sourceDate, toTZ, "M")),
+    year: formatInTimeZone(sourceDate, toTZ, "yy"),
+    time: formatInTimeZone(sourceDate, toTZ, "HH:mm"),
+  };
 };
+
 
 export function getGreeting(hour: number): string {
   if (hour >= 5 && hour <= 9) return `Good Morning,`;
@@ -116,7 +128,7 @@ export const checkIfOpenOnDate = async (
       selectedDate.monthNum,
       +selectedDate.day
     );
-    console.log(dayOfWeekData)
+   
     const checkOpen = (storeTimes: StoreTimeCheck[]) => {
       for (const time of storeTimes) {
         if (!time.is_open || !time.start_time || !time.end_time) continue;

@@ -13,7 +13,7 @@ import { getStoreTimes } from '../../api/StoreTimeAPI'
 import { getStoreOverrides } from '../../api/StoreOverrides'
 import { StoreOverride, StoreTime } from '../../types/StoreTypes'
 import { StoreComponent } from './StoreComponent'
-import Animated, { FadeInDown, FadeInLeft, FadeInRight } from 'react-native-reanimated'
+import Animated, { FadeIn, FadeInDown, FadeInLeft, FadeInRight } from 'react-native-reanimated'
 import CustomBtn from '../../components/CustomBtn'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import OpenLight from '../../components/OpenLight'
@@ -116,11 +116,13 @@ export default function HomeScreen() {
       <CustomText size={themes.text.sm}>You can also check future times below!</CustomText>
       {selectedTime && selectedDate?.year ? (
         <>
+        <Animated.View entering={FadeInLeft} key={selectedTime}>
           <CustomText size={themes.text.sm}>{selectedDate.dayName}, {selectedDate?.month} {selectedDate?.day} {formatToAmPm(selectedTime)}</CustomText>
-          <View style={styles.openRow}>
+        </Animated.View>
+          <Animated.View entering={FadeIn} key={selectedDate.isStoreOpen ? "Open" : "Closed"} style={styles.openRow}>
             <CustomText size={themes.text.sm}>We are {selectedDate.isStoreOpen ? "Open" : "Closed"}</CustomText>
             <OpenLight isOpen={selectedDate.isStoreOpen!} />
-          </View>
+          </Animated.View>
         </>
       ) : (
         <CustomText color={themes.colors.grayDark} size={themes.text.xs}>Please Select a Date</CustomText>

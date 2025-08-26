@@ -1,7 +1,7 @@
 // store/timeStore.ts
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { checkIfOpenOnDate, convertTimeToTimeZone, NextDays, TIME_ZONES, TimeZones, TimeZoneType } from "../utils/Dates";
+import { checkIfOpenOnDate, ConvertNextDays, convertTimeToTimeZone, NextDays, TIME_ZONES, TimeZones, TimeZoneType } from "../utils/Dates";
 
 const STORAGE_TIME_KEY = '@per_diem/time_token';
 const STORAGE_TIME_ZONE_KEY = '@per_diem/time_zone_token';
@@ -25,49 +25,52 @@ export const useTimeStore = create<TimeState>((set, get) => ({
 
   setSelectedTimeZone: async (zone: TimeZoneType) => {
     const currentState = get();
+    let convertNextDays: ConvertNextDays | null = null;
+    const { selectedDate, selectedTime } = currentState;
 
-    // Save the selected timezone
+    const referenceDate = selectedDate
+      ? new Date(
+        Number(selectedDate.year) + 2000,
+        Number(selectedDate.monthNum) - 1,
+        Number(selectedDate.day)
+      )
+      : undefined;
+
     await AsyncStorage.setItem(STORAGE_TIME_ZONE_KEY, JSON.stringify(zone));
-
-    // Convert time if needed
-    let convertedTime = currentState.selectedTime;
     if (currentState.selectedTime && currentState.selectedTimeZone) {
       if (zone.timeZone === TimeZones.Local) {
-        convertedTime = convertTimeToTimeZone(
+        convertNextDays = convertTimeToTimeZone(
           currentState.selectedTime,
           TimeZones.LosAngeles,
-          TimeZones.Local
+          TimeZones.Local,
+          referenceDate
         );
       } else if (zone.timeZone === TimeZones.LosAngeles) {
-        convertedTime = convertTimeToTimeZone(
+        convertNextDays = convertTimeToTimeZone(
           currentState.selectedTime,
           TimeZones.Local,
-          TimeZones.LosAngeles
+          TimeZones.LosAngeles,
+          referenceDate
         );
       }
     }
 
-    // Update state
-    set({
-      selectedTimeZone: zone,
-      selectedTime: convertedTime,
-    });
-
-    // Save converted time
-    if (convertedTime) {
-      await AsyncStorage.setItem(STORAGE_TIME_KEY, convertedTime);
-    }
-
-    const { selectedDate } = currentState;
-
-    if (convertedTime && selectedDate) {
-      const isStoreOpen = await checkIfOpenOnDate(convertedTime, selectedDate);
-      const newSelectedDate = { ...selectedDate, isStoreOpen };
+    if (convertNextDays?.time) {
+      await AsyncStorage.setItem(STORAGE_TIME_KEY, convertNextDays.time);
+      const isStoreOpen = await checkIfOpenOnDate(convertNextDays.time, convertNextDays);
+      const newSelectedDate = { ...convertNextDays, isStoreOpen };
 
       await AsyncStorage.setItem(STORAGE_TIME_DATE, JSON.stringify(newSelectedDate));
 
       set({
+        selectedTimeZone: zone,
         selectedDate: newSelectedDate,
+        selectedTime: newSelectedDate.time
+      });
+    } else {
+      set({
+        selectedTimeZone: zone,
+        selectedTime: selectedTime
       });
     }
   },
@@ -102,7 +105,3 @@ export const useTimeStore = create<TimeState>((set, get) => ({
     });
   },
 }));
-function setSelectedDate(arg0: any) {
-  throw new Error("Function not implemented.");
-}
-
