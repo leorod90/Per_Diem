@@ -1,9 +1,58 @@
-## issues
+# Per Diem App Documentation
 
-### react native
-- its says 30 mn intervals and in other places it says 15 minutes
+## API Structure
+All environment variables are stored in the .env file.
 
-### swagger
-- the get day api says (0-6), but in the get all its (1-7), this caused me a few issues correctly displaying the correct closed dates
-- also the get all has an empty obj as well as a duplicate day for fridays
-- some spelling mistakes in curl command'http://https://coding...'
+### Core API Modules
+#### AuthApi: Handles user authentication and verification with the backend
+#### Axios: Manages HTTP client configuration and request handling
+#### Firebase: Handles Firebase setup and Google Sign-In integration
+#### StoreOverride: Contains all CRUD operations for store override times
+#### StoreTime: Contains all CRUD operations for basic store operating hours
+
+## Testing
+### Running Tests
+npm test
+
+### Test Coverage
+-User interaction testing for key screens
+-Utility function testing (Date utilities, etc.)
+-Mock API responses for reliable testing
+
+## Known Issues
+### React Native
+
+#### Time Interval Inconsistency: 
+-The app displays "30-minute intervals" in some places and "15 minutes" in others. This needs to be standardized across the UI.
+
+### Backend/Swagger API
+
+#### Day Numbering Inconsistency:
+
+-The get day API uses day numbering (0-6)
+-The get all API uses day numbering (1-7)
+T-his inconsistency causes issues with displaying correct closed dates
+
+
+#### Data Quality Issues:
+
+-The get all endpoint returns an empty object
+-Duplicate entry for Friday in the response
+
+
+#### Documentation Errors:
+
+- Swagger curl examples contain malformed URLs: 'http://https://coding...'
+
+
+
+Setup Instructions
+
+### Clone the repository
+-add .env file to root
+-Install dependencies: npm install
+-Install pod: cd ios/pod install
+-Run tests: npm test
+-Start the development server: npm start
+-npm run ios
+-npm run android
