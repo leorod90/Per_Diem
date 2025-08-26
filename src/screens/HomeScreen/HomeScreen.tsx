@@ -67,18 +67,6 @@ export default function HomeScreen() {
     navigation.navigate("TimeScreen");
   }
 
-  useEffect(() => {
-    const checkIsOpenHandler = async (time: string, date: NextDays) => {
-      const isOpen = await checkIfOpenOnDate(time, date);
-      setIsStoreOpen(isOpen);
-    }
-
-    if (selectedTime && selectedDate) {
-      checkIsOpenHandler(selectedTime, selectedDate);
-    }
-  }, [selectedTime, selectedDate]);
-
-
   return (
     <ScrollView contentContainerStyle={[styles.container, {
       paddingBottom: safeAreaInsets.bottom
@@ -127,8 +115,8 @@ export default function HomeScreen() {
         <>
           <CustomText size={themes.text.sm}>{selectedDate.dayName}, {selectedDate?.month} {selectedDate?.day} {formatToAmPm(selectedTime)}</CustomText>
           <View style={styles.openRow}>
-            <CustomText size={themes.text.sm}>We are {isStoreOpen ? "Open" : "Closed"}</CustomText>
-            <OpenLight isOpen={isStoreOpen!} />
+            <CustomText size={themes.text.sm}>We are {selectedDate.isStoreOpen ? "Open" : "Closed"}</CustomText>
+            <OpenLight isOpen={selectedDate.isStoreOpen!} />
           </View>
         </>
       ) : (

@@ -11,6 +11,7 @@ export type NextDays = {
   dayName: string;
   dayNum: number;
   monthNum: number;
+  isStoreOpen?: boolean;
 }
 
 export const generateNext30Days = (timezone: string) => {
@@ -111,9 +112,8 @@ export const checkIfOpenOnDate = async (
     const dayOfWeekData: StoreTimeCheck[] = await getStoreTimesByDay(selectedDate.dayNum);
     const overrideData: StoreTimeCheck[] | null = await getStoreOverridesByMonthAndDay(
       selectedDate.monthNum,
-      selectedDate.dayNum
+      +selectedDate.day
     );
-
     const checkOpen = (storeTimes: StoreTimeCheck[]) => {
       for (const time of storeTimes) {
         if (!time.is_open || !time.start_time || !time.end_time) continue;
