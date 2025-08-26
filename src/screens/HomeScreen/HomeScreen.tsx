@@ -53,13 +53,13 @@ export default function HomeScreen() {
   }
 
   const notificationHandler = async () => {
-    await testNotification();
+    // await testNotification();
+    await scheduleStoreReminder(storeTimes);
     Toast.show({
       type: 'success',
       text1: 'Notification Set',
       text2: 'We will remind you when we are about to open!',
     });
-    // await scheduleStoreReminder(storeTimes);
   }
 
   const navToTimeScreen = () => {

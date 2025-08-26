@@ -8,7 +8,7 @@ import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz';
 import { TimeZones } from '../utils/Dates';
 
 const TEST_DELAY =  5000 // 5 seconds;
-const  DELAY_BEFORE = 60; // in minutes
+const DELAY_BEFORE = 60; // in minutes
 
 export function useNotification() {
   // Request permission for notifications

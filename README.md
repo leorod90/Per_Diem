@@ -15,29 +15,29 @@ All environment variables are stored in the .env file.
 npm test
 
 ### Test Coverage
--User interaction testing for key screens
--Utility function testing (Date utilities, etc.)
--Mock API responses for reliable testing
+- User interaction testing for key screens
+- Utility function testing (Date utilities, etc.)
+- Mock API responses for reliable testing
 
 ## Known Issues
 ### React Native
 
 #### Time Interval Inconsistency: 
--The app displays "30-minute intervals" in some places and "15 minutes" in others. This needs to be standardized across the UI.
+- The app displays "30-minute intervals" in some places and "15 minutes" in others. This needs to be standardized across the UI.
 
 ### Backend/Swagger API
 
 #### Day Numbering Inconsistency:
 
--The get day API uses day numbering (0-6)
--The get all API uses day numbering (1-7)
-T-his inconsistency causes issues with displaying correct closed dates
+- The get day API uses day numbering (0-6)
+- The get all API uses day numbering (1-7)
+- This inconsistency causes issues with displaying correct closed dates
 
 
 #### Data Quality Issues:
 
--The get all endpoint returns an empty object
--Duplicate entry for Friday in the response
+- The get all endpoint returns an empty object
+- Duplicate entry for Friday in the response
 
 
 #### Documentation Errors:
@@ -49,10 +49,19 @@ T-his inconsistency causes issues with displaying correct closed dates
 Setup Instructions
 
 ### Clone the repository
--add .env file to root
--Install dependencies: npm install
--Install pod: cd ios/pod install
--Run tests: npm test
--Start the development server: npm start
--npm run ios
--npm run android
+- add .env file to root
+- Install dependencies: npm install
+- Install pod: cd ios/pod install
+- Run tests: npm test
+- Start the development server: npm start
+- npm run ios
+- npm run android
+
+## app limitations
+- adding an animated splash screen caused compatibly issues with firebase, so skipped it
+- did not add icon
+- if you want to test the notifications you can use "testNotification" or change "DELAY_BEFORE" time to test if fully
+- no real loaders, i might add them for fun
+
+## loom
+- https://www.loom.com/share/73ac2186323f49aea1e7acffda3ca48b?sid=ff8c60ba-f527-4bae-99a5-8f150169d760
