@@ -22,23 +22,34 @@ interface Props {
 
 export const StoreComponent: React.FC<Props> = ({ storeTimes }) => {
   const renderDay = (dayIndex: number) => {
-    const dayData = storeTimes.find(d => d.day_of_week === dayIndex);
+    const dayEntries = storeTimes.filter(d => d.day_of_week === dayIndex);
 
-    const isOpen = dayData?.is_open ?? false;
-    const start = formatToAmPm(dayData?.start_time) ?? "--:--";
-    const end = formatToAmPm(dayData?.end_time) ?? "--:--";
+    if (dayEntries.length === 0) return null;
+
+    const isOpen = dayEntries.some(d => d.is_open);
+
+    // Combine start-end times for all open periods
+    const times = dayEntries
+      .filter(d => d.is_open)
+      .map(d => `${formatToAmPm(d.start_time)} - ${formatToAmPm(d.end_time)}`)
+      .join(", ") || "Closed";
 
     return (
       <Animated.View entering={FadeIn} style={styles.row} key={dayIndex}>
-        <CustomHeading size={themes.text.sm} style={styles.dayLabel}>{getDayName(dayIndex)}</CustomHeading>
-        <CustomText size={themes.text.sm} style={styles.timeText} color={themes.colors.grayDark}>{isOpen ? `${start} - ${end}` : "Closed"}</CustomText>
-        <OpenLight isOpen={isOpen}/>
+        <CustomHeading size={themes.text.sm} style={styles.dayLabel}>
+          {getDayName(dayIndex)}
+        </CustomHeading>
+        <CustomText size={themes.text.sm} style={styles.timeText} color={themes.colors.grayDark}>
+          {times}
+        </CustomText>
+        <OpenLight isOpen={isOpen} />
       </Animated.View>
     );
   };
 
   return <View style={styles.container}>{[1, 2, 3, 4, 5, 6, 7].map(renderDay)}</View>;
 };
+
 
 const styles = StyleSheet.create({
   container: {
