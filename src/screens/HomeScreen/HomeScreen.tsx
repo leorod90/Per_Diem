@@ -32,7 +32,6 @@ export default function HomeScreen() {
   const [greetingText, setGreetingText] = useState("");
   const [storeTimes, setStoreTimes] = useState<StoreTime[]>([]);
   const [storeOverrideTimes, setStoreOverrideTimes] = useState<StoreOverride[]>([]);
-  const [isStoreOpen, setIsStoreOpen] = useState<boolean>();
 
   useEffect(() => {
     const now = new Date();

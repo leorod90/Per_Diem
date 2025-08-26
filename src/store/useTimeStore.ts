@@ -58,13 +58,16 @@ export const useTimeStore = create<TimeState>((set, get) => ({
       await AsyncStorage.setItem(STORAGE_TIME_KEY, convertedTime);
     }
 
-    const { selectedDate } = currentState; 
+    const { selectedDate } = currentState;
 
     if (convertedTime && selectedDate) {
       const isStoreOpen = await checkIfOpenOnDate(convertedTime, selectedDate);
+      const newSelectedDate = { ...selectedDate, isStoreOpen };
+
+      await AsyncStorage.setItem(STORAGE_TIME_DATE, JSON.stringify(newSelectedDate));
 
       set({
-        selectedDate: { ...selectedDate, isStoreOpen },
+        selectedDate: newSelectedDate,
       });
     }
   },

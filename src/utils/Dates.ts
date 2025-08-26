@@ -116,7 +116,7 @@ export const checkIfOpenOnDate = async (
       selectedDate.monthNum,
       +selectedDate.day
     );
-
+    console.log(dayOfWeekData)
     const checkOpen = (storeTimes: StoreTimeCheck[]) => {
       for (const time of storeTimes) {
         if (!time.is_open || !time.start_time || !time.end_time) continue;
