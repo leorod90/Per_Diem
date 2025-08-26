@@ -46,6 +46,7 @@ export default {
   },
   text: {
     fontFamily: Platform.OS === 'ios' ? 'Avenir Next' : 'Roboto',
+    xs: spacing(14),
     sm: spacing(16),
     md: spacing(18),
     lg: spacing(24),

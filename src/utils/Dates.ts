@@ -3,6 +3,7 @@ import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 import { DayOfWeek, StoreOverride, StoreTime } from "../types/StoreTypes";
 import { getStoreTimesByDay } from "../api/StoreTimeAPI";
 import { getStoreOverridesByMonthAndDay } from "../api/StoreOverrides";
+import axios from "axios";
 
 export type NextDays = {
   month: string;
@@ -22,7 +23,7 @@ export const generateNext30Days = (timezone: string) => {
     const nextDate = addDays(today, i);
     const zonedDate = toZonedTime(nextDate, timezone);
 
-    const dayNum = (zonedDate.getDay() === 0 ? 7 : zonedDate.getDay()) as DayOfWeek;
+    const dayNum = (zonedDate.getDay() + 1) as DayOfWeek;
     const monthNum = (zonedDate.getMonth() + 1) as Month;
 
     dates.push({
@@ -54,7 +55,7 @@ export function generateTimeSlots(interval = 15) {
   return slots;
 }
 
-export function formatToAmPm(time24: string | undefined): string| null {
+export function formatToAmPm(time24: string | undefined): string | null {
   try {
     const [hourStr, minuteStr] = time24!.split(':');
     let hour = parseInt(hourStr, 10);
@@ -109,11 +110,13 @@ export const checkIfOpenOnDate = async (
   selectedDate: NextDays
 ): Promise<boolean> => {
   try {
+    
     const dayOfWeekData: StoreTimeCheck[] = await getStoreTimesByDay(selectedDate.dayNum);
     const overrideData: StoreTimeCheck[] | null = await getStoreOverridesByMonthAndDay(
       selectedDate.monthNum,
       +selectedDate.day
     );
+
     const checkOpen = (storeTimes: StoreTimeCheck[]) => {
       for (const time of storeTimes) {
         if (!time.is_open || !time.start_time || !time.end_time) continue;
@@ -129,23 +132,25 @@ export const checkIfOpenOnDate = async (
       return false;
     };
 
-    if (overrideData && overrideData.length) {
-      return checkOpen(overrideData); 
+    if (overrideData && overrideData.length > 0) {
+      return checkOpen(overrideData);
     }
-
     return checkOpen(dayOfWeekData);
   } catch (error) {
-    console.error(error);
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      console.log(error.response?.status);
+    }
     return false;
   }
 };
 
-export function roundToNearest15(time: string): string {
+export function roundToNearest30(time: string): string {
   const [hourStr, minuteStr] = time.split(':');
   let hour = parseInt(hourStr, 10);
   let minutes = parseInt(minuteStr, 10);
 
-  const roundedMinutes = Math.round(minutes / 15) * 15;
+  const roundedMinutes = Math.round(minutes / 30) * 30;
 
   if (roundedMinutes === 60) {
     hour = (hour + 1) % 24;
@@ -156,6 +161,7 @@ export function roundToNearest15(time: string): string {
 
   return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
+
 
 export const getDayName = (day: DayOfWeek) => {
   switch (day) {

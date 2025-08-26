@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CustomText from '../../components/CustomText'
-import { checkIfOpenOnDate, getCityFromTimeZone, NextDays, roundToNearest15, TIME_ZONES, TimeZones } from '../../utils/Dates'
+import { checkIfOpenOnDate, getCityFromTimeZone, NextDays, roundToNearest30, TIME_ZONES, TimeZones } from '../../utils/Dates'
 import themes, { spacing } from '../../themes'
 import TimeDisplay, { CardFadeDirection } from './TimeDisplay'
 import { TimePickerModal } from '../../components/TimePickerModal'
@@ -27,7 +27,7 @@ export default function TimeScreen() {
     if (!tempDate) {
       return
     }
-    const roundedTime = roundToNearest15(time);
+    const roundedTime = roundToNearest30(time);
     setSelectedTime(roundedTime);
     const isStoreOpen = await checkIfOpenOnDate(roundedTime, tempDate);
     setSelectedDate({ ...tempDate, isStoreOpen });

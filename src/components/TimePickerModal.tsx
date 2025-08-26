@@ -4,6 +4,8 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { format } from 'date-fns';
 import themes, { spacing } from '../themes';
 
+const MINUTE_INTERVAL = 30;
+
 interface TimePickerModalProps {
   visible: boolean;
   initialTime?: Date;
@@ -27,7 +29,7 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
 
       // Android: confirm immediately when user presses OK
       if (Platform.OS === 'android' && event.type === 'set') {
-        onConfirm(format(selectedDate, 'HH:mm')); // ✅ use selectedDate directly
+        onConfirm(format(selectedDate, 'HH:mm'));
       }
     } else {
       // Android: cancel pressed
@@ -46,7 +48,7 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
               mode="time"
               display="spinner"
               onChange={handleChange}
-              minuteInterval={15}
+              minuteInterval={MINUTE_INTERVAL}
             />
             <View style={styles.buttons}>
               <Button title="Cancel" onPress={onCancel} />
@@ -67,7 +69,7 @@ export const TimePickerModal: React.FC<TimePickerModalProps> = ({
       mode="time"
       display="default"
       onChange={handleChange}
-      minuteInterval={15}
+      minuteInterval={MINUTE_INTERVAL}
     />
   ) : null;
 };

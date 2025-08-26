@@ -120,7 +120,7 @@ export default function HomeScreen() {
           </View>
         </>
       ) : (
-        <CustomText size={themes.text.sm}>Please Select a Date</CustomText>
+        <CustomText color={themes.colors.grayDark} size={themes.text.xs}>Please Select a Date</CustomText>
       )}
 
       <View style={{ flex: 1 }} />
