@@ -57,15 +57,21 @@ export function generateTimeSlots(interval = 15) {
 
 export function formatToAmPm(time24: string | undefined): string | null {
   try {
-    const [hourStr, minuteStr] = time24!.split(':');
-    let hour = parseInt(hourStr, 10);
-    const minute = minuteStr;
+    if (!time24 || !time24.includes(':')) return null;
+    
+    const parts = time24.split(':');
+    if (parts.length !== 2) return null;
+    
+    const [hourStr, minuteStr] = parts;
+    const hour = parseInt(hourStr, 10);
+    const minute = parseInt(minuteStr, 10);
+    
+    if (isNaN(hour) || isNaN(minute)) return null;
+    
     const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
 
-    hour = hour % 12;
-    if (hour === 0) hour = 12;
-
-    return `${hour}:${minute} ${ampm}`;
+    return `${displayHour}:${minuteStr} ${ampm}`;
   } catch (error) {
     return null;
   }
@@ -173,7 +179,6 @@ export function roundToNearest30(time: string): string {
 
   return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
-
 
 export const getDayName = (day: DayOfWeek) => {
   switch (day) {
